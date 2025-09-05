@@ -53,7 +53,7 @@ jobs:
           npm install ../neabyte-secure-jwt-*.tgz
 
           echo "Testing CommonJS..."
-          node -e "const jwt = require('@neabyte/secure-jwt').default; const instance = new jwt({secret: 'test', expireIn: '1h'}); console.log('✅ CommonJS works:', typeof instance.sign)"
-
+          node -e "const jwt = require('@neabyte/secure-jwt').default; const instance = new jwt({secret: 'test-secret-key-123', expireIn: '1h'}); console.log('✅ CommonJS works:', typeof instance.sign)"
+          
           echo "Testing ES Modules..."
-          node --input-type=module -e "import SecureJWT from '@neabyte/secure-jwt'; const jwt = new SecureJWT({secret: 'test', expireIn: '1h'}); console.log('✅ ES Modules work:', typeof jwt.sign)"
+          node --input-type=module -e "import SecureJWT from '@neabyte/secure-jwt'; const jwt = new SecureJWT({secret: 'test-secret-key-123', expireIn: '1h'}); console.log('✅ ES Modules work:', typeof jwt.sign)"
