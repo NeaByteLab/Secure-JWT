@@ -15,7 +15,8 @@
   "files": [
     "dist/**/*",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "keywords": [
     "jwt",
@@ -33,6 +34,7 @@
   "engines": {
     "node": ">=v18.0.0"
   },
+  "license": "MIT",
   "author": {
     "name": "NeaByteLab",
     "email": "me@neabyte.com",
@@ -48,9 +50,11 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "clean": "rm -rf dist",
     "build": "tsc && tsc-alias -f -fe .js && npm run minify",
     "minify": "find dist -name '*.js' -exec terser {} --compress --mangle -o {} \\;",
     "start": "node dist/index.js",
+    "prepublishOnly": "npm run clean && npm run build",
     "lint": "eslint src/**/**/**/*.ts",
     "lint:fix": "eslint src/**/**/**/*.ts --fix",
     "format": "prettier --write src/**/**/**/*.ts",
