@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22.16.0'
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+      - name: Check code formatting
+        run: npm run format:check
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Test package installation
+        run: |
+          npm pack
+          mkdir test-package
+          cd test-package
+          npm init -y
+          npm install ../neabyte-secure-jwt-*.tgz
+
+          echo "Testing CommonJS..."
+          node -e "const jwt = require('@neabyte/secure-jwt').default; const instance = new jwt({secret: 'test', expireIn: '1h'}); console.log('✅ CommonJS works:', typeof instance.sign)"
+
+          echo "Testing ES Modules..."
+          node --input-type=module -e "import SecureJWT from '@neabyte/secure-jwt'; const jwt = new SecureJWT({secret: 'test', expireIn: '1h'}); console.log('✅ ES Modules work:', typeof jwt.sign)"
