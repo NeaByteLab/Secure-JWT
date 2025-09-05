@@ -2,7 +2,7 @@
 
 ![npm version](https://img.shields.io/npm/v/@neabyte/secure-jwt)
 ![node version](https://img.shields.io/node/v/@neabyte/secure-jwt)
-![coverage](https://img.shields.io/badge/coverage-98.88%25-brightgreen)
+![coverage](https://img.shields.io/badge/coverage-99.08%25-brightgreen)
 ![license](https://img.shields.io/npm/l/@neabyte/secure-jwt)
 
 A secure JWT implementation with AES-256-GCM encryption for Node.js applications.
@@ -13,6 +13,7 @@ A secure JWT implementation with AES-256-GCM encryption for Node.js applications
 - 🛡️ **Tamper detection** - Authentication tags prevent modification
 - ⏰ **Automatic expiration** - Built-in token lifecycle management
 - 🔄 **Version compatibility** - Prevents downgrade attacks
+- 🚀 **Built-in caching** - LRU cache with TTL for performance
 - 📏 **Payload size limits** - 8KB maximum to prevent DoS
 - 📦 **Multi-format support** - ESM, CommonJS, and TypeScript
 - ⚡ **Zero dependencies** - No external crypto libraries
@@ -34,7 +35,8 @@ const SecureJWT = require('@neabyte/secure-jwt').default
 
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
-  expireIn: '1h'
+  expireIn: '1h',
+  cached: 1000
 })
 
 const data = { userId: 123, role: 'admin' }
@@ -50,7 +52,8 @@ import SecureJWT from '@neabyte/secure-jwt'
 
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
-  expireIn: '1h'
+  expireIn: '1h',
+  cached: 1000
 })
 
 const data = { userId: 123, role: 'admin' }
@@ -66,7 +69,8 @@ import SecureJWT from '@neabyte/secure-jwt'
 
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
-  expireIn: '1h'
+  expireIn: '1h',
+  cached: 1000
 })
 
 const data: { userId: number; role: string } = { userId: 123, role: 'admin' }
@@ -85,7 +89,8 @@ const decoded: unknown = jwt.decode(token)
 const jwt = new SecureJWT({
   secret: 'your-secret-key',     // Required: 8+ characters
   expireIn: '1h',                // Required: Time string
-  version: '1.0.0'               // Optional: Default '1.0.0'
+  version: '1.0.0',              // Optional: Default '1.0.0'
+  cached: 1000                   // Optional: Cache size (default: 1000)
 })
 ```
 
@@ -114,6 +119,7 @@ new SecureJWT(options: JWTOptions)
 - `secret?: string` - Secret key (8+ chars, optional)
 - `expireIn: string` - Token expiration time
 - `version?: string` - Token version (default: '1.0.0')
+- `cached?: number` - Cache size for performance (default: 1000)
 
 ### Methods
 

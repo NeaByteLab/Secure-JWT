@@ -20,6 +20,8 @@ export interface JWTOptions {
   secret?: string
   /** Version identifier for the token (optional) */
   version?: string
+  /** Cache configuration (optional) */
+  cached?: number
 }
 
 /**
@@ -74,4 +76,18 @@ export interface PayloadData {
   iat: number
   /** Data version identifier */
   version: string
+}
+
+/**
+ * Cache entry structure with expiration and usage tracking
+ */
+export interface CacheEntry<T> {
+  /** The stored data */
+  data: T
+  /** When this entry expires (milliseconds since epoch) */
+  expiresAt: number
+  /** When this entry was created (milliseconds since epoch) */
+  createdAt: number
+  /** Number of times this entry has been accessed */
+  accessCount: number
 }

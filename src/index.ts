@@ -1,6 +1,7 @@
 import type { JWTOptions, TokenEncrypted, TokenData, PayloadData } from '@interfaces/index'
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 import {
+  Cache,
   ValidationError,
   EncryptionError,
   DecryptionError,
@@ -25,6 +26,10 @@ export default class SecureJWT {
   private readonly expireInMs: number
   /** Token version */
   private readonly version: string
+  /** Cache for decrypted payload data */
+  private readonly payloadCache: Cache<unknown>
+  /** Cache for token verification results */
+  private readonly verifyCache: Cache<boolean>
 
   /**
    * Creates a new SecureJWT instance
@@ -42,6 +47,8 @@ export default class SecureJWT {
     this.secret = this.generateSecret(options.secret)
     this.expireInMs = parsetimeToMs(options.expireIn)
     this.version = options.version ?? '1.0.0'
+    this.payloadCache = new Cache<unknown>(options.cached ?? 1000, this.expireInMs)
+    this.verifyCache = new Cache<boolean>(options.cached ?? 1000, this.expireInMs)
   }
 
   /**
@@ -160,6 +167,12 @@ export default class SecureJWT {
    */
   verify(token: string): boolean {
     try {
+      if (this.verifyCache.has(token)) {
+        const cachedResult = this.verifyCache.get(token)
+        if (cachedResult !== undefined) {
+          return cachedResult
+        }
+      }
       ErrorHandler.validateToken(token)
       ErrorHandler.validateTokenIntegrity(token)
       const decoded = ErrorHandler.validateBase64Decode(
@@ -172,6 +185,7 @@ export default class SecureJWT {
       )
       ErrorHandler.validateTokenDataIntegrity(tokenData)
       if (!isValidTokenData(tokenData)) {
+        this.verifyCache.set(token, false, 0)
         return false
       }
       ErrorHandler.validateVersionCompatibility(tokenData.version, this.version)
@@ -187,13 +201,16 @@ export default class SecureJWT {
         getErrorMessage('INVALID_PAYLOAD_STRUCTURE')
       )
       if (!isValidPayloadData(payload)) {
+        this.verifyCache.set(token, false, 0)
         return false
       }
       ErrorHandler.validateVersionCompatibility(payload.version, tokenData.version)
       ErrorHandler.checkTokenExpiration(payload.exp)
       ErrorHandler.validateTokenTimestamps(payload.exp, tokenData.exp, payload.iat, tokenData.iat)
+      this.verifyCache.set(token, true, Math.max(0, payload.exp * 1000 - Date.now()))
       return true
     } catch {
+      this.verifyCache.set(token, false, 0)
       return false
     }
   }
@@ -252,6 +269,12 @@ export default class SecureJWT {
    */
   decode(token: string): unknown {
     try {
+      if (this.payloadCache.has(token)) {
+        const cachedResult = this.payloadCache.get(token)
+        if (cachedResult !== undefined) {
+          return cachedResult
+        }
+      }
       ErrorHandler.validateToken(token)
       ErrorHandler.validateTokenIntegrity(token)
       const decoded = ErrorHandler.validateBase64Decode(
@@ -284,6 +307,7 @@ export default class SecureJWT {
       ErrorHandler.validateVersionCompatibility(payload.version, tokenData.version)
       ErrorHandler.checkTokenExpiration(payload.exp)
       ErrorHandler.validateTokenTimestamps(payload.exp, tokenData.exp, payload.iat, tokenData.iat)
+      this.payloadCache.set(token, payload.data, Math.max(0, payload.exp * 1000 - Date.now()))
       return payload.data
     } catch (error) {
       if (

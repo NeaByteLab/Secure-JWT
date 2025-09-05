@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2025-09-06
+
+### Added
+- Caching system with LRU eviction
+- Cache configuration documentation
+- `cached` option in constructor for cache size configuration
+- Separate caches for verification results and payload data
+- Access count tracking for eviction decisions
+- TTL-based cache expiration
+
+### Performance
+- Speed improvements for `verify()` and `decode()` operations
+- Cached operations reduce processing time from ~2ms to ~0.1ms
+- Automatic cleanup of expired cache entries
+- LRU eviction for memory management
+
+### API
+- New constructor option: `cached?: number` (default: 1000)
+- Cache size parameter for memory usage control
+- Backward compatible - existing code works without changes
+
+### Documentation
+- Updated README with caching documentation
+- Performance benchmarks and configuration examples
+- Updated usage examples with caching options
+
+### Testing
+- Cache unit tests with 41 test cases
+- LRU eviction algorithm testing
+- TTL expiration testing
+- Performance and stress testing
+- Edge case validation for cache operations
+- 100% statement, line, and function coverage for Cache class
+- Overall test coverage improved to 99.08%
+
+---
+
 ## [1.0.0] - 2025-09-06
 
 ### Added
