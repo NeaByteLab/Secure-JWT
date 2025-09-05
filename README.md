@@ -37,13 +37,20 @@ const SecureJWT = require('@neabyte/secure-jwt').default
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
   expireIn: '1h',
+  version: '1.0.0',
   cached: 1000
 })
 
+// Encode any data type
 const data = { userId: 123, role: 'admin' }
 const token = jwt.sign(data)
 const isValid = jwt.verify(token)
 const decoded = jwt.decode(token)
+
+// Also works with strings, numbers, arrays, etc.
+const stringToken = jwt.sign('Hello World!')
+const numberToken = jwt.sign(42)
+const arrayToken = jwt.sign([1, 2, 3])
 ```
 
 ### ES Modules (ESM)
@@ -54,13 +61,20 @@ import SecureJWT from '@neabyte/secure-jwt'
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
   expireIn: '1h',
+  version: '1.0.0',
   cached: 1000
 })
 
+// Encode any data type
 const data = { userId: 123, role: 'admin' }
 const token = jwt.sign(data)
 const isValid = jwt.verify(token)
 const decoded = jwt.decode(token)
+
+// Also works with strings, numbers, arrays, etc.
+const stringToken = jwt.sign('Hello World!')
+const numberToken = jwt.sign(42)
+const arrayToken = jwt.sign([1, 2, 3])
 ```
 
 ### TypeScript
@@ -71,13 +85,20 @@ import SecureJWT from '@neabyte/secure-jwt'
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
   expireIn: '1h',
+  version: '1.0.0',
   cached: 1000
 })
 
+// Encode any data type
 const data: { userId: number; role: string } = { userId: 123, role: 'admin' }
 const token: string = jwt.sign(data)
 const isValid: boolean = jwt.verify(token)
 const decoded: unknown = jwt.decode(token)
+
+// Also works with strings, numbers, arrays, etc.
+const stringToken: string = jwt.sign('Hello World!')
+const numberToken: string = jwt.sign(42)
+const arrayToken: string = jwt.sign([1, 2, 3])
 ```
 
 ---
