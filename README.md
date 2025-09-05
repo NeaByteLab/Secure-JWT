@@ -108,6 +108,8 @@ const jwt = new SecureJWT({
 '1y'    // 1 year (365 days)
 ```
 
+---
+
 ## 📝 API Reference
 
 ### Constructor
@@ -160,6 +162,60 @@ try {
 } catch (error) {
   console.log('Decode error:', error.message)
 }
+```
+
+---
+
+## 🏗️ Architecture
+
+### JWT Encoding Process
+
+```mermaid
+graph TD
+    A[User Data] --> B[Create Payload]
+    B --> C[Add Timestamps & Version]
+    C --> D[JSON Stringify Payload]
+    D --> E[Generate Random IV]
+    E --> F[AES-256-GCM Encryption]
+    F --> G[Create Token Structure]
+    G --> H[Base64 Encode]
+    H --> I[Secure JWT Token]
+    
+    J[Secret Key] --> K[Key Derivation]
+    K --> F
+    L[Random Salt] --> K
+    
+    M[Version] --> N[Additional Authenticated Data]
+    N --> F
+    
+    F --> O[Authentication Tag]
+    O --> G
+    
+    style A fill:#e1f5fe,color:#000
+    style I fill:#c8e6c9,color:#000
+    style F fill:#fff3e0,color:#000
+    style J fill:#fce4ec,color:#000
+```
+
+### Security Layers
+
+```mermaid
+graph LR
+    A[Input Data] --> B[Validation Layer]
+    B --> C[Encryption Layer]
+    C --> D[Integrity Layer]
+    D --> E[Encoding Layer]
+    E --> F[Secure Token]
+    
+    G[Secret Key] --> C
+    H[Random IV] --> C
+    I[Version AAD] --> C
+    J[Auth Tag] --> D
+    
+    style B fill:#ffebee,color:#000
+    style C fill:#fff3e0,color:#000
+    style D fill:#f3e5f5,color:#000
+    style E fill:#e8f5e8,color:#000
 ```
 
 ---
