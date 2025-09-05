@@ -9,9 +9,9 @@ export class SecureJWTError extends Error {
 
   /**
    * Creates a new SecureJWTError instance
-   * @param message - The error message
-   * @param code - The error code identifier
-   * @param statusCode - The HTTP status code (default: 500)
+   * @param message - Error message
+   * @param code - Error code identifier
+   * @param statusCode - HTTP status code (default: 500)
    */
   constructor(message: string, code: string, statusCode: number = 500) {
     super(message)
@@ -27,7 +27,7 @@ export class SecureJWTError extends Error {
 export class ValidationError extends SecureJWTError {
   /**
    * Creates a new ValidationError instance
-   * @param message - The error message
+   * @param message - Error message
    */
   constructor(message: string) {
     super(message, 'VALIDATION_ERROR', 400)
@@ -41,7 +41,7 @@ export class ValidationError extends SecureJWTError {
 export class EncryptionError extends SecureJWTError {
   /**
    * Creates a new EncryptionError instance
-   * @param message - The error message
+   * @param message - Error message
    */
   constructor(message: string) {
     super(message, 'ENCRYPTION_ERROR', 500)
@@ -55,7 +55,7 @@ export class EncryptionError extends SecureJWTError {
 export class DecryptionError extends SecureJWTError {
   /**
    * Creates a new DecryptionError instance
-   * @param message - The error message
+   * @param message - Error message
    */
   constructor(message: string) {
     super(message, 'DECRYPTION_ERROR', 500)
@@ -69,7 +69,7 @@ export class DecryptionError extends SecureJWTError {
 export class TokenExpiredError extends SecureJWTError {
   /**
    * Creates a new TokenExpiredError instance
-   * @param message - The error message (default: 'Token has expired')
+   * @param message - Error message (default: 'Token has expired')
    */
   constructor(message: string = 'Token has expired') {
     super(message, 'TOKEN_EXPIRED', 401)
@@ -83,7 +83,7 @@ export class TokenExpiredError extends SecureJWTError {
 export class TokenInvalidError extends SecureJWTError {
   /**
    * Creates a new TokenInvalidError instance
-   * @param message - The error message (default: 'Invalid token')
+   * @param message - Error message (default: 'Invalid token')
    */
   constructor(message: string = 'Invalid token') {
     super(message, 'TOKEN_INVALID', 401)
@@ -97,7 +97,7 @@ export class TokenInvalidError extends SecureJWTError {
 export class VersionMismatchError extends SecureJWTError {
   /**
    * Creates a new VersionMismatchError instance
-   * @param message - The error message (default: 'Token version mismatch')
+   * @param message - Error message (default: 'Token version mismatch')
    */
   constructor(message: string = 'Token version mismatch') {
     super(message, 'VERSION_MISMATCH', 400)
@@ -111,7 +111,7 @@ export class VersionMismatchError extends SecureJWTError {
 export class PayloadTooLargeError extends SecureJWTError {
   /**
    * Creates a new PayloadTooLargeError instance
-   * @param message - The error message (default: 'Payload too large')
+   * @param message - Error message (default: 'Payload too large')
    */
   constructor(message: string = 'Payload too large') {
     super(message, 'PAYLOAD_TOO_LARGE', 413)
@@ -125,7 +125,7 @@ export class PayloadTooLargeError extends SecureJWTError {
 export class TimeFormatError extends SecureJWTError {
   /**
    * Creates a new TimeFormatError instance
-   * @param message - The error message
+   * @param message - Error message
    */
   constructor(message: string) {
     super(message, 'TIME_FORMAT_ERROR', 400)
@@ -139,7 +139,7 @@ export class TimeFormatError extends SecureJWTError {
 export class SecretKeyError extends SecureJWTError {
   /**
    * Creates a new SecretKeyError instance
-   * @param message - The error message
+   * @param message - Error message
    */
   constructor(message: string) {
     super(message, 'SECRET_KEY_ERROR', 500)

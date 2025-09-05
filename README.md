@@ -3,7 +3,7 @@
 ![npm version](https://img.shields.io/npm/v/@neabyte/secure-jwt)
 ![node version](https://img.shields.io/node/v/@neabyte/secure-jwt)
 ![typescript version](https://img.shields.io/badge/typeScript-5.9.2-blue.svg)
-![coverage](https://img.shields.io/badge/coverage-99.08%25-brightgreen)
+![coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
 ![license](https://img.shields.io/npm/l/@neabyte/secure-jwt.svg)
 
 A secure JWT implementation with AES-256-GCM encryption for Node.js applications.
@@ -109,7 +109,7 @@ const arrayToken: string = jwt.sign([1, 2, 3])
 
 ```javascript
 const jwt = new SecureJWT({
-  secret: 'your-secret-key',     // Required: 8+ characters
+  secret: 'your-secret-key',     // Required: 8-255 characters
   expireIn: '1h',                // Required: Time string
   version: '1.0.0',              // Optional: Default '1.0.0'
   cached: 1000                   // Optional: Cache size (default: 1000)
@@ -140,8 +140,8 @@ new SecureJWT(options: JWTOptions)
 ```
 
 **Options:**
-- `secret?: string` - Secret key (8+ chars, optional)
-- `expireIn: string` - Token expiration time
+- `secret: string` - Secret key (8-255 chars, required for security)
+- `expireIn: string` - Token expiration time (required for security)
 - `version?: string` - Token version (default: '1.0.0')
 - `cached?: number` - Cache size for performance (default: 1000)
 
@@ -201,17 +201,18 @@ graph TD
     F --> G[Create Token Structure]
     G --> H[Base64 Encode]
     H --> I[Secure JWT Token]
-    
-    J[Secret Key] --> K[Key Derivation]
+
+    J[Secret Key] --> K[Key Preparation]
     K --> F
     L[Random Salt] --> K
-    
-    M[Version] --> N[Additional Authenticated Data]
+
+    M[Version] --> N[Additional
+    Authenticated Data]
     N --> F
-    
+
     F --> O[Authentication Tag]
     O --> G
-    
+
     style A fill:#e1f5fe,color:#000
     style I fill:#c8e6c9,color:#000
     style F fill:#fff3e0,color:#000
@@ -227,12 +228,12 @@ graph LR
     C --> D[Integrity Layer]
     D --> E[Encoding Layer]
     E --> F[Secure Token]
-    
+
     G[Secret Key] --> C
     H[Random IV] --> C
     I[Version AAD] --> C
     J[Auth Tag] --> D
-    
+
     style B fill:#ffebee,color:#000
     style C fill:#fff3e0,color:#000
     style D fill:#f3e5f5,color:#000

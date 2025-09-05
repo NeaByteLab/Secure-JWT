@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2025-09-06
+
+### Breaking Changes
+- `secret` parameter is now required in constructor
+- `JWTOptions.secret` changed from optional (`secret?: string`) to required (`secret: string`)
+
+### Security
+- Added cache size validation (max 10,000 tokens)
+- Added time expiration limit (max 1 year)
+- Made secret parameter required for enhanced security
+- Enhanced secret key validation (8-255 characters)
+
+### Added
+- Cache size validation with configurable limits
+- Time expiration validation with 1-year maximum
+- Enhanced error messages for better debugging
+- Comprehensive test coverage for new validations
+
+### Changed
+- Updated README documentation to reflect required secret parameter
+- Fixed architecture diagram (Key Preparation vs Key Derivation)
+- Simplified JSDoc comments across multiple files
+- Enhanced error handling and validation coverage
+
+### Fixed
+- Test suite updated to handle required secret parameter
+- Architecture diagram accuracy improved
+- Documentation consistency across all files
+
+---
+
 ## [1.1.1] - 2025-09-06
 
 ### Security

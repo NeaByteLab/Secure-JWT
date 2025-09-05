@@ -3,8 +3,8 @@ import { ErrorHandler, TimeFormatError, errorMessages } from '@utils/index'
 
 /**
  * Converts time unit to milliseconds
- * @param timeUnit - The TimeUnit object with value and unit to convert
- * @returns The time in milliseconds
+ * @param timeUnit - TimeUnit object with value and unit to convert
+ * @returns Time in milliseconds
  * @throws {TimeFormatError} when unit is not supported
  */
 export function timeToMs(timeUnit: TimeUnit): number {
@@ -31,8 +31,8 @@ export function timeToMs(timeUnit: TimeUnit): number {
 
 /**
  * Parses time expressions into TimeUnit objects
- * @param timeString - The time string to parse (e.g., '1m', '5h', '1d', '1M', '1y')
- * @returns The TimeUnit object with value and unit
+ * @param timeString - Time string to parse (e.g., '1m', '5h', '1d', '1M', '1y')
+ * @returns TimeUnit object with value and unit
  * @throws {TimeFormatError} when time string format is invalid or value is negative
  */
 export function parseTimeString(timeString: string): TimeUnit {
@@ -51,12 +51,17 @@ export function parseTimeString(timeString: string): TimeUnit {
 
 /**
  * Parses time string and converts to milliseconds
- * @param timeString - The time string to parse (e.g., '1m', '5h', '1d')
- * @returns The time in milliseconds
+ * @param timeString - Time string to parse (e.g., '1m', '5h', '1d')
+ * @returns Time in milliseconds
  * @throws {TimeFormatError} when time string format is invalid
  */
 export function parsetimeToMs(timeString: string): number {
   ErrorHandler.validateTimeString(timeString)
   const timeUnit = parseTimeString(timeString)
-  return timeToMs(timeUnit)
+  const milliseconds = timeToMs(timeUnit)
+  const maxExpirationMs = 365 * 24 * 60 * 60 * 1000
+  if (milliseconds > maxExpirationMs) {
+    throw new TimeFormatError(errorMessages.TIME_VALUE_TOO_LARGE)
+  }
+  return milliseconds
 }

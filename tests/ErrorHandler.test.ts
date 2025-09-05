@@ -7,7 +7,8 @@ import {
   TokenExpiredError,
   VersionMismatchError,
   DecryptionError,
-  EncryptionError
+  EncryptionError,
+  SecureJWTError
 } from '../src/utils/ErrorBase'
 import { errorMessages } from '../src/utils/ErrorMap'
 
@@ -134,8 +135,28 @@ describe('ErrorHandler', () => {
       expect(() => ErrorHandler.validateSecret('short')).toThrow(SecretKeyError)
     })
 
+    it('should throw SecretKeyError for long secret', () => {
+      expect(() => ErrorHandler.validateSecret('a'.repeat(256))).toThrow(SecretKeyError)
+    })
+
     it('should throw SecretKeyError for invalid characters', () => {
-      expect(() => ErrorHandler.validateSecret('invalid spaces')).toThrow(SecretKeyError)
+      expect(() => ErrorHandler.validateSecret('invalid\ttab')).toThrow(SecretKeyError)
+    })
+
+    it('should accept Unicode characters in secret', () => {
+      expect(() => ErrorHandler.validateSecret('valid-secret-🚀-123')).not.toThrow()
+      expect(() => ErrorHandler.validateSecret('valid-secret-中文-123')).not.toThrow()
+      expect(() => ErrorHandler.validateSecret('valid-secret-émojis-123')).not.toThrow()
+    })
+
+    it('should accept exactly 255 character secret', () => {
+      const maxSecret = 'a'.repeat(255)
+      expect(() => ErrorHandler.validateSecret(maxSecret)).not.toThrow()
+    })
+
+    it('should reject exactly 256 character secret', () => {
+      const tooLongSecret = 'a'.repeat(256)
+      expect(() => ErrorHandler.validateSecret(tooLongSecret)).toThrow(SecretKeyError)
     })
   })
 
@@ -181,6 +202,43 @@ describe('ErrorHandler', () => {
     })
   })
 
+  describe('validateCacheSize', () => {
+    it('should not throw for valid cache size', () => {
+      expect(() => ErrorHandler.validateCacheSize(1000)).not.toThrow()
+      expect(() => ErrorHandler.validateCacheSize(1)).not.toThrow()
+      expect(() => ErrorHandler.validateCacheSize(10000)).not.toThrow()
+    })
+
+    it('should throw ValidationError for non-number', () => {
+      expect(() => ErrorHandler.validateCacheSize('1000' as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateCacheSize(null as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateCacheSize(undefined as any)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for non-integer', () => {
+      expect(() => ErrorHandler.validateCacheSize(1000.5)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateCacheSize(1000.1)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for too small cache size', () => {
+      expect(() => ErrorHandler.validateCacheSize(0)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateCacheSize(-1)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for too large cache size', () => {
+      expect(() => ErrorHandler.validateCacheSize(10001)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateCacheSize(50000)).toThrow(ValidationError)
+    })
+
+    it('should accept exactly 1 cache size', () => {
+      expect(() => ErrorHandler.validateCacheSize(1)).not.toThrow()
+    })
+
+    it('should accept exactly 10000 cache size', () => {
+      expect(() => ErrorHandler.validateCacheSize(10000)).not.toThrow()
+    })
+  })
+
   describe('validateExpiration', () => {
     it('should not throw for valid expiration', () => {
       const now = Math.floor(Date.now() / 1000)
@@ -190,6 +248,12 @@ describe('ErrorHandler', () => {
     it('should throw ValidationError for too far expiration', () => {
       const now = Math.floor(Date.now() / 1000)
       expect(() => ErrorHandler.validateExpiration(now + 7200, now + 3600)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError with correct error message', () => {
+      const now = Math.floor(Date.now() / 1000)
+      expect(() => ErrorHandler.validateExpiration(now + 7200, now + 3600)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateExpiration(now + 7200, now + 3600)).toThrow(errorMessages.EXPIRATION_TOO_FAR)
     })
   })
 
@@ -212,6 +276,21 @@ describe('ErrorHandler', () => {
 
     it('should throw VersionMismatchError for different versions', () => {
       expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '2.0.0')).toThrow(VersionMismatchError)
+    })
+
+    it('should throw VersionMismatchError for downgrade attack', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '2.0.0')).toThrow(VersionMismatchError)
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '2.0.0')).toThrow(errorMessages.VERSION_DOWNGRADE_ATTACK)
+    })
+
+    it('should throw VersionMismatchError for upgrade not supported', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('2.0.0', '1.0.0')).toThrow(VersionMismatchError)
+      expect(() => ErrorHandler.validateVersionCompatibility('2.0.0', '1.0.0')).toThrow(errorMessages.VERSION_UPGRADE_NOT_SUPPORTED)
+    })
+
+    it('should throw VersionMismatchError for general version mismatch', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.1', '1.0.0')).toThrow(VersionMismatchError)
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.1', '1.0.0')).toThrow(errorMessages.VERSION_UPGRADE_NOT_SUPPORTED)
     })
   })
 
@@ -559,6 +638,33 @@ describe('ErrorHandler', () => {
       } finally {
         Buffer.from = originalFrom
       }
+    })
+  })
+
+  describe('validateJSONParse', () => {
+    it('should parse valid JSON and return typed result', () => {
+      const result = ErrorHandler.validateJSONParse<{ test: string }>('{"test":"value"}', 'Invalid JSON')
+      expect(result).toEqual({ test: 'value' })
+    })
+
+    it('should parse valid JSON array', () => {
+      const result = ErrorHandler.validateJSONParse<number[]>('[1,2,3]', 'Invalid JSON')
+      expect(result).toEqual([1, 2, 3])
+    })
+
+    it('should parse valid JSON primitive', () => {
+      const result = ErrorHandler.validateJSONParse<string>('"hello"', 'Invalid JSON')
+      expect(result).toBe('hello')
+    })
+
+    it('should throw ValidationError for invalid JSON', () => {
+      expect(() => ErrorHandler.validateJSONParse('invalid json', 'Custom error')).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateJSONParse('invalid json', 'Custom error')).toThrow('Custom error')
+    })
+
+    it('should throw ValidationError for malformed JSON', () => {
+      expect(() => ErrorHandler.validateJSONParse('{"test": "value",}', 'Malformed JSON')).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateJSONParse('{"test": "value",}', 'Malformed JSON')).toThrow('Malformed JSON')
     })
   })
 
@@ -987,6 +1093,83 @@ describe('ErrorHandler', () => {
       expect(() => {
         ErrorHandler.validateTokenDataIntegrity(data)
       }).not.toThrow()
+    })
+  })
+
+  describe('wrap', () => {
+    it('should wrap function and return result on success', () => {
+      const testFn = (a: number, b: number) => a + b
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(wrappedFn(2, 3)).toBe(5)
+    })
+
+    it('should re-throw SecureJWTError without modification', () => {
+      const testFn = () => {
+        throw new ValidationError('Test error')
+      }
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(() => wrappedFn()).toThrow(ValidationError)
+      expect(() => wrappedFn()).toThrow('Test error')
+    })
+
+    it('should use errorMapper when provided', () => {
+      const testFn = () => {
+        throw new Error('Original error')
+      }
+      const errorMapper = (error: unknown) => new ValidationError('Mapped error')
+      const wrappedFn = ErrorHandler.wrap(testFn, errorMapper)
+      expect(() => wrappedFn()).toThrow(ValidationError)
+      expect(() => wrappedFn()).toThrow('Mapped error')
+    })
+
+    it('should create SecureJWTError for unknown error types', () => {
+      const testFn = () => {
+        throw 'String error'
+      }
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(() => wrappedFn()).toThrow(SecureJWTError)
+      expect(() => wrappedFn()).toThrow('Unknown error occurred')
+    })
+
+    it('should create SecureJWTError with error message for Error objects', () => {
+      const testFn = () => {
+        throw new Error('Custom error message')
+      }
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(() => wrappedFn()).toThrow(SecureJWTError)
+      expect(() => wrappedFn()).toThrow('Custom error message')
+    })
+
+    it('should create SecureJWTError with status code 500 for unknown errors', () => {
+      const testFn = () => {
+        throw 'String error'
+      }
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(() => wrappedFn()).toThrow(SecureJWTError)
+      expect(() => wrappedFn()).toThrow('Unknown error occurred')
+      try {
+        wrappedFn()
+      } catch (error) {
+        expect(error).toBeInstanceOf(SecureJWTError)
+        expect((error as any).statusCode).toBe(500)
+        expect((error as any).code).toBe('UNKNOWN_ERROR')
+      }
+    })
+
+    it('should create SecureJWTError with explicit status code for non-Error objects', () => {
+      const testFn = () => {
+        throw { custom: 'object' }
+      }
+      const wrappedFn = ErrorHandler.wrap(testFn)
+      expect(() => wrappedFn()).toThrow(SecureJWTError)
+      expect(() => wrappedFn()).toThrow('Unknown error occurred')
+      try {
+        wrappedFn()
+      } catch (error) {
+        expect(error).toBeInstanceOf(SecureJWTError)
+        expect((error as any).statusCode).toBe(500)
+        expect((error as any).code).toBe('UNKNOWN_ERROR')
+      }
     })
   })
 })

@@ -52,6 +52,9 @@ export const errorMessages = {
 
   // Version errors
   VERSION_MISMATCH: 'Token version does not match expected version',
+  VERSION_DOWNGRADE_ATTACK:
+    'Version downgrade attack detected - token version is older than expected',
+  VERSION_UPGRADE_NOT_SUPPORTED: 'Token version is newer than supported version',
   VERSION_MUST_BE_STRING: 'Version must be a string',
   VERSION_CANNOT_BE_EMPTY: 'Version cannot be empty',
   VERSION_INVALID_FORMAT: 'Version must be in format "x.y.z" (e.g., "1.0.0", "2.1.0")',
@@ -63,13 +66,20 @@ export const errorMessages = {
   // Time format errors
   TIME_FORMAT_INVALID: 'Invalid time format. Expected format: number + unit (ms, s, m, h, d, M, y)',
   TIME_VALUE_NEGATIVE: 'Time value must be positive',
+  TIME_VALUE_TOO_LARGE: 'Time value exceeds maximum limit of 1 year',
   TIME_UNIT_UNSUPPORTED: 'Unsupported time unit',
   TIME_STRING_NON_EMPTY: 'Time string must be a non-empty string',
 
   // Secret key errors
   SECRET_TOO_SHORT: 'Secret key must be at least 8 characters long',
+  SECRET_TOO_LONG: 'Secret key must be at most 255 characters long',
   SECRET_INVALID_CHARS: 'Secret key contains invalid characters',
   SECRET_MUST_BE_STRING: 'Secret must be a string',
+
+  // Cache size errors
+  CACHE_SIZE_MUST_BE_INTEGER: 'Cache size must be an integer',
+  CACHE_SIZE_TOO_SMALL: 'Cache size must be at least 1',
+  CACHE_SIZE_TOO_LARGE: 'Cache size must be at most 10000',
 
   // Options errors
   OPTIONS_MUST_BE_OBJECT: 'Options must be an object',
@@ -110,8 +120,8 @@ export const errorMessages = {
 
 /**
  * Retrieves error message from errorMessages object
- * @param key - The error message key
- * @returns The error message string
+ * @param key - Error message key
+ * @returns Error message string
  */
 export function getErrorMessage(key: keyof typeof errorMessages): string {
   return errorMessages[key] as string

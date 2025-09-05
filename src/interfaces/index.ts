@@ -2,7 +2,7 @@
  * JWT payload structure
  */
 export interface JWTPayload {
-  /** The actual data payload */
+  /** Actual data payload */
   payload: unknown
   /** Expiration timestamp in seconds */
   exp: number
@@ -14,10 +14,10 @@ export interface JWTPayload {
  * Configuration for JWT operations
  */
 export interface JWTOptions {
+  /** Secret key for signing tokens (required for security) */
+  secret: string
   /** Token expiration time as a string (e.g., '1h', '30m', '7d') */
   expireIn: string
-  /** Secret key for signing tokens (optional) */
-  secret?: string
   /** Version identifier for the token (optional) */
   version?: string
   /** Cache configuration (optional) */
@@ -28,7 +28,7 @@ export interface JWTOptions {
  * Time value with its unit
  */
 export interface TimeUnit {
-  /** Numeric value of the time */
+  /** Numeric value of time */
   value: number
   /** Time unit (milliseconds, seconds, minutes, hours, days, months, years) */
   unit: 'ms' | 's' | 'm' | 'h' | 'd' | 'M' | 'y'
@@ -68,7 +68,7 @@ export interface TokenEncrypted {
  * Payload data structure with timing and version information
  */
 export interface PayloadData {
-  /** The actual payload data */
+  /** Actual payload data */
   data: unknown
   /** Expiration timestamp in seconds */
   exp: number
@@ -82,7 +82,7 @@ export interface PayloadData {
  * Cache entry structure with expiration and usage tracking
  */
 export interface CacheEntry<T> {
-  /** The stored data */
+  /** Stored data */
   data: T
   /** When this entry expires (milliseconds since epoch) */
   expiresAt: number

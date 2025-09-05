@@ -84,5 +84,27 @@ describe('TimeParser', () => {
     it('should throw TimeFormatError for non-string input', () => {
       expect(() => parsetimeToMs(123 as any)).toThrow(TimeFormatError)
     })
+
+    it('should accept exactly 1 year expiration', () => {
+      expect(parsetimeToMs('365d')).toBe(365 * 24 * 60 * 60 * 1000)
+      expect(parsetimeToMs('1y')).toBe(365 * 24 * 60 * 60 * 1000)
+    })
+
+    it('should throw TimeFormatError for expiration longer than 1 year', () => {
+      expect(() => parsetimeToMs('366d')).toThrow(TimeFormatError)
+      expect(() => parsetimeToMs('2y')).toThrow(TimeFormatError)
+      expect(() => parsetimeToMs('1000d')).toThrow(TimeFormatError)
+    })
+
+    it('should accept various valid time formats under 1 year', () => {
+      expect(parsetimeToMs('364d')).toBe(364 * 24 * 60 * 60 * 1000)
+      expect(parsetimeToMs('12M')).toBe(12 * 30 * 24 * 60 * 60 * 1000)
+      expect(parsetimeToMs('8760h')).toBe(8760 * 60 * 60 * 1000)
+    })
+
+    it('should throw TimeFormatError for very large time values', () => {
+      expect(() => parsetimeToMs('1000y')).toThrow(TimeFormatError)
+      expect(() => parsetimeToMs('10000d')).toThrow(TimeFormatError)
+    })
   })
 })

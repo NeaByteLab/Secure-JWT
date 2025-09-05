@@ -1,7 +1,7 @@
 import type { CacheEntry } from '@interfaces/index'
 
 /**
- * In-memory cache that stores data with expiration times
+ * In-memory cache that stores data with expiration
  */
 export class Cache<T> {
   private readonly cache = new Map<string, CacheEntry<T>>()
@@ -20,8 +20,8 @@ export class Cache<T> {
 
   /**
    * Gets a value from the cache
-   * @param key - The key to look up
-   * @returns The cached value or undefined if not found or expired
+   * @param key - Key to look up
+   * @returns Cached value or undefined if not found or expired
    */
   get(key: string): T | undefined {
     const entry = this.cache.get(key)
@@ -38,8 +38,8 @@ export class Cache<T> {
 
   /**
    * Stores a value in the cache
-   * @param key - The key to store under
-   * @param value - The value to store
+   * @param key - Key to store under
+   * @param value - Value to store
    * @param ttl - Expiration time in milliseconds (optional, uses default if not provided, minimum: 1ms)
    */
   set(key: string, value: T, ttl?: number): void {
@@ -61,7 +61,7 @@ export class Cache<T> {
 
   /**
    * Checks if a key exists in the cache and is not expired
-   * @param key - The key to check
+   * @param key - Key to check
    * @returns True if the key exists and is valid
    */
   has(key: string): boolean {

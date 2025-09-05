@@ -16,8 +16,8 @@ import {
 } from '@utils/index'
 
 /**
- * Secure JWT implementation with encryption support
- * Handles token creation, verification, and data extraction
+ * JWT implementation with encryption
+ * Creates, verifies, and extracts data from tokens
  */
 export default class SecureJWT {
   /** Secret key for encryption */
@@ -33,16 +33,17 @@ export default class SecureJWT {
 
   /**
    * Creates a new SecureJWT instance
-   * @param options - The configuration for token expiration, secret key, and version
+   * @param options - Configuration for token expiration, secret key, and version
    */
   constructor(options: JWTOptions) {
     ErrorHandler.validateOptions(options)
     ErrorHandler.validateExpireIn(options.expireIn)
-    if (options.secret !== undefined) {
-      ErrorHandler.validateSecret(options.secret)
-    }
+    ErrorHandler.validateSecret(options.secret)
     if (options.version !== undefined) {
       ErrorHandler.validateVersion(options.version)
+    }
+    if (options.cached !== undefined) {
+      ErrorHandler.validateCacheSize(options.cached)
     }
     this.#secret = this.generateSecret(options.secret)
     this.#expireInMs = parsetimeToMs(options.expireIn)
@@ -52,22 +53,19 @@ export default class SecureJWT {
   }
 
   /**
-   * Creates a secret key from the provided secret or generates a random one
-   * @param secret - The optional secret string for key creation
-   * @returns The Buffer containing the secret key
+   * Creates a secret key from the provided secret
+   * @param secret - Secret string for key creation
+   * @returns Buffer containing the secret key
    */
-  private generateSecret(secret?: string): Buffer {
-    if (secret != null && secret.length > 0) {
-      const salt = randomBytes(32)
-      return Buffer.concat([salt, Buffer.from(secret, 'utf8')])
-    }
-    return randomBytes(32)
+  private generateSecret(secret: string): Buffer {
+    const salt = randomBytes(32)
+    return Buffer.concat([salt, Buffer.from(secret, 'utf8')])
   }
 
   /**
    * Encrypts data using AES-256-GCM encryption
-   * @param data - The string data to encrypt
-   * @returns The object with encrypted data, initialization vector, and authentication tag
+   * @param data - String data to encrypt
+   * @returns Object with encrypted data, initialization vector, and authentication tag
    */
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
@@ -89,8 +87,8 @@ export default class SecureJWT {
 
   /**
    * Decrypts data using AES-256-GCM decryption
-   * @param tokenEncrypted - The object with encrypted data, initialization vector, and authentication tag
-   * @returns The decrypted data as string
+   * @param tokenEncrypted - Object with encrypted data, initialization vector, and authentication tag
+   * @returns Decrypted data as string
    */
   private decrypt(tokenEncrypted: TokenEncrypted): string {
     try {
@@ -116,9 +114,9 @@ export default class SecureJWT {
   }
 
   /**
-   * Creates a secure JWT token from data
-   * @param data - The data to sign (will be JSON stringified)
-   * @returns The JWT token string
+   * Creates a JWT token from data
+   * @param data - Data to sign (will be JSON stringified)
+   * @returns JWT token string
    */
   sign(data: unknown): string {
     try {
@@ -162,8 +160,8 @@ export default class SecureJWT {
 
   /**
    * Validates if a JWT token is valid
-   * @param token - The Base64 encoded token to check
-   * @returns The boolean indicating if token is valid and not expired
+   * @param token - Base64 encoded token to check
+   * @returns Boolean indicating if token is valid and not expired
    */
   verify(token: string): boolean {
     try {
@@ -217,7 +215,7 @@ export default class SecureJWT {
 
   /**
    * Validates a JWT token and throws specific errors
-   * @param token - The Base64 encoded token to validate
+   * @param token - Base64 encoded token to validate
    * @throws {ValidationError} When token format is invalid
    * @throws {TokenExpiredError} When token has expired
    * @throws {DecryptionError} When token decryption fails
@@ -260,8 +258,8 @@ export default class SecureJWT {
 
   /**
    * Extracts data from a JWT token
-   * @param token - The Base64 encoded token to decode
-   * @returns The decoded payload data
+   * @param token - Base64 encoded token to decode
+   * @returns Decoded payload data
    * @throws {ValidationError} When token format is invalid
    * @throws {TokenExpiredError} When token has expired
    * @throws {DecryptionError} When token decryption fails

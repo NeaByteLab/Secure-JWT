@@ -2,8 +2,8 @@ import type { TokenData, PayloadData } from '@interfaces/index'
 
 /**
  * Validates if token data has valid structure
- * @param tokenData - The token data to check
- * @returns The boolean indicating if token data has valid structure
+ * @param tokenData - Token data to check
+ * @returns Boolean indicating if token data has valid structure
  */
 export function isValidTokenData(tokenData: unknown): tokenData is TokenData {
   return (
@@ -26,8 +26,8 @@ export function isValidTokenData(tokenData: unknown): tokenData is TokenData {
 
 /**
  * Validates if payload data has valid structure
- * @param payload - The payload data to check
- * @returns The boolean indicating if payload data has valid structure
+ * @param payload - Payload data to check
+ * @returns Boolean indicating if payload data has valid structure
  */
 export function isValidPayloadData(payload: unknown): payload is PayloadData {
   return (

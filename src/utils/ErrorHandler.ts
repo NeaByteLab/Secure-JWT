@@ -12,14 +12,14 @@ import {
 } from '@utils/index'
 
 /**
- * Provides error handling utilities for validation and error management
+ * Handles errors and validates data
  */
 export class ErrorHandler {
   /**
-   * Wraps a function with error handling to catch and transform errors
-   * @param fn - The function to wrap with error handling
-   * @param errorMapper - The optional function to map caught errors to SecureJWTError instances
-   * @returns The wrapped function that handles errors automatically
+   * Wraps a function to catch and handle errors
+   * @param fn - Function to wrap
+   * @param errorMapper - Optional function to map errors to SecureJWTError
+   * @returns Wrapped function with error handling
    */
   static wrap<T extends unknown[], R>(
     fn: (...args: T) => R,
@@ -45,8 +45,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates that input data is not null or undefined
-   * @param data - The data to validate
+   * Checks if data is valid
+   * @param data - Data to check
    * @throws {ValidationError} when data is null or undefined
    */
   static validateData(data: unknown): void {
@@ -59,8 +59,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates that time string is a non-empty string
-   * @param timeString - The time string to validate
+   * Checks if time string is valid
+   * @param timeString - Time string to check
    * @throws {TimeFormatError} when time string is not a string or is empty
    */
   static validateTimeString(timeString: string): void {
@@ -70,8 +70,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates that options parameter is a valid object
-   * @param options - The options object to validate
+   * Checks if options is a valid object
+   * @param options - Options to check
    * @throws {ValidationError} when options is null, undefined, or not an object
    */
   static validateOptions(options: unknown): void {
@@ -81,8 +81,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates that expireIn parameter is a non-empty string
-   * @param expireIn - The expiration time string to validate
+   * Checks if expireIn is a valid string
+   * @param expireIn - Expiration time string to check
    * @throws {ValidationError} when expireIn is null, undefined, or not a string
    */
   static validateExpireIn(expireIn: unknown): void {
@@ -92,8 +92,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates token string format and ensures it's not empty
-   * @param token - The token string to validate
+   * Checks if token is a valid string
+   * @param token - Token string to check
    * @throws {ValidationError} when token is not a string or is empty
    */
   static validateToken(token: string): void {
@@ -106,8 +106,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates secret key format, length, and character requirements
-   * @param secret - The secret key to validate
+   * Checks if secret key meets requirements
+   * @param secret - Secret key to check
    * @throws {ValidationError} when secret is not a string
    * @throws {SecretKeyError} when secret is too short or contains invalid characters
    */
@@ -118,14 +118,20 @@ export class ErrorHandler {
     if (secret.length < 8) {
       throw new SecretKeyError(getErrorMessage('SECRET_TOO_SHORT'))
     }
-    if (!/^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]+$/.test(secret)) {
-      throw new SecretKeyError(getErrorMessage('SECRET_INVALID_CHARS'))
+    if (secret.length > 255) {
+      throw new SecretKeyError(getErrorMessage('SECRET_TOO_LONG'))
+    }
+    for (let i = 0; i < secret.length; i++) {
+      const charCode = secret.charCodeAt(i)
+      if (charCode < 32 || charCode === 127) {
+        throw new SecretKeyError(getErrorMessage('SECRET_INVALID_CHARS'))
+      }
     }
   }
 
   /**
-   * Validates version string format (must be semantic version format)
-   * @param version - The version string to validate
+   * Checks if version string is valid
+   * @param version - Version string to check
    * @throws {ValidationError} when version is not a string, empty, or invalid format
    */
   static validateVersion(version: string): void {
@@ -141,9 +147,26 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates payload size against maximum allowed size
-   * @param payload - The payload string to validate
-   * @param maxSize - The maximum allowed size in bytes (default: 8192)
+   * Checks if cache size is valid
+   * @param cached - Cache size to check
+   * @throws {ValidationError} when cache size is invalid
+   */
+  static validateCacheSize(cached: number): void {
+    if (typeof cached !== 'number' || !Number.isInteger(cached)) {
+      throw new ValidationError(getErrorMessage('CACHE_SIZE_MUST_BE_INTEGER'))
+    }
+    if (cached < 1) {
+      throw new ValidationError(getErrorMessage('CACHE_SIZE_TOO_SMALL'))
+    }
+    if (cached > 10000) {
+      throw new ValidationError(getErrorMessage('CACHE_SIZE_TOO_LARGE'))
+    }
+  }
+
+  /**
+   * Checks if payload size is within limits
+   * @param payload - Payload string to check
+   * @param maxSize - Maximum allowed size in bytes (default: 8192)
    * @throws {PayloadTooLargeError} when payload exceeds maximum size
    */
   static validatePayloadSize(payload: string, maxSize: number = 8192): void {
@@ -154,9 +177,9 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates expiration time against maximum allowed expiration
-   * @param exp - The expiration timestamp to validate
-   * @param maxExp - The maximum allowed expiration timestamp
+   * Checks if expiration time is within limits
+   * @param exp - Expiration timestamp to check
+   * @param maxExp - Maximum allowed expiration timestamp
    * @throws {ValidationError} when expiration is too far in the future
    */
   static validateExpiration(exp: number, maxExp: number): void {
@@ -166,8 +189,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates if token has expired by comparing with current time
-   * @param exp - The expiration timestamp to validate
+   * Checks if token has expired
+   * @param exp - Expiration timestamp to check
    * @throws {TokenExpiredError} when token has expired
    */
   static checkTokenExpiration(exp: number): void {
@@ -178,20 +201,48 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates version compatibility between token and expected version
-   * @param tokenVersion - The token version to validate
-   * @param expectedVersion - The expected version to validate against
+   * Checks if token version matches expected version
+   * @param tokenVersion - Token version to check
+   * @param expectedVersion - Expected version to check against
    * @throws {VersionMismatchError} when versions do not match
    */
   static validateVersionCompatibility(tokenVersion: string, expectedVersion: string): void {
     if (tokenVersion !== expectedVersion) {
+      if (this.compareVersions(tokenVersion, expectedVersion) < 0) {
+        throw new VersionMismatchError(getErrorMessage('VERSION_DOWNGRADE_ATTACK'))
+      }
+      if (this.compareVersions(tokenVersion, expectedVersion) > 0) {
+        throw new VersionMismatchError(getErrorMessage('VERSION_UPGRADE_NOT_SUPPORTED'))
+      }
       throw new VersionMismatchError(getErrorMessage('VERSION_MISMATCH'))
     }
   }
 
   /**
-   * Validates data string for encryption requirements
-   * @param data - The data string to validate
+   * Compares two version strings
+   * @param version1 - First version to compare
+   * @param version2 - Second version to compare
+   * @returns -1 if version1 < version2, 0 if equal, 1 if version1 > version2
+   */
+  private static compareVersions(version1: string, version2: string): number {
+    const v1Parts = version1.split('.').map(Number)
+    const v2Parts = version2.split('.').map(Number)
+    for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
+      const v1Part = v1Parts[i] ?? 0
+      const v2Part = v2Parts[i] ?? 0
+      if (v1Part < v2Part) {
+        return -1
+      }
+      if (v1Part > v2Part) {
+        return 1
+      }
+    }
+    return 0
+  }
+
+  /**
+   * Checks if data string is valid for encryption
+   * @param data - Data string to check
    * @throws {ValidationError} when data is null, undefined, or not a string
    */
   static validateEncryptionData(data: string): void {
@@ -201,8 +252,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates encrypted token structure and required properties
-   * @param tokenEncrypted - The encrypted token object to validate
+   * Checks if encrypted token has required properties
+   * @param tokenEncrypted - Encrypted token object to check
    * @throws {ValidationError} when token structure is invalid or missing required properties
    */
   static validateTokenEncrypted(tokenEncrypted: unknown): void {
@@ -219,8 +270,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates initialization vector (IV) format for decryption
-   * @param iv - The initialization vector string to validate
+   * Checks if IV format is valid
+   * @param iv - Initialization vector string to check
    * @throws {DecryptionError} when IV format is invalid
    */
   static validateIVFormat(iv: string): void {
@@ -230,8 +281,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates authentication tag format for decryption
-   * @param tag - The authentication tag string to validate
+   * Checks if authentication tag format is valid
+   * @param tag - Authentication tag string to check
    * @throws {DecryptionError} when tag format is invalid
    */
   static validateTagFormat(tag: string): void {
@@ -241,9 +292,9 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates key length for AES-256 encryption
-   * @param key - The key buffer to validate
-   * @throws {EncryptionError} when key length is invalid for AES-256
+   * Checks if key length is valid for encryption
+   * @param key - Key buffer to check
+   * @throws {EncryptionError} when key length is invalid
    */
   static validateKeyLength(key: Buffer): void {
     if (key == null || key.length !== 32) {
@@ -252,8 +303,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates authentication tag buffer for encryption
-   * @param tag - The authentication tag buffer to validate
+   * Checks if authentication tag buffer is valid
+   * @param tag - Authentication tag buffer to check
    * @throws {EncryptionError} when tag is null or empty
    */
   static validateAuthTag(tag: Buffer): void {
@@ -263,11 +314,11 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates token timestamps consistency between payload and token
-   * @param payloadExp - The payload expiration timestamp to validate
-   * @param tokenExp - The token expiration timestamp to validate
-   * @param payloadIat - The payload issued at timestamp to validate
-   * @param tokenIat - The token issued at timestamp to validate
+   * Checks if token timestamps match between payload and token
+   * @param payloadExp - Payload expiration timestamp to check
+   * @param tokenExp - Token expiration timestamp to check
+   * @param payloadIat - Payload issued at timestamp to check
+   * @param tokenIat - Token issued at timestamp to check
    * @throws {ValidationError} when timestamps do not match
    */
   static validateTokenTimestamps(
@@ -282,10 +333,10 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates and parses JSON string safely
-   * @param jsonString - The JSON string to parse
-   * @param errorMessage - The error message to use when parsing fails
-   * @returns The parsed JSON object
+   * Parses JSON string safely
+   * @param jsonString - JSON string to parse
+   * @param errorMessage - Error message to use when parsing fails
+   * @returns Parsed JSON object
    * @throws {ValidationError} when JSON parsing fails
    */
   static validateJSONParse<T>(jsonString: string, errorMessage: string): T {
@@ -297,10 +348,10 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates and decodes base64 string safely
-   * @param token - The base64 encoded token to decode
-   * @param errorMessage - The error message to use when decoding fails
-   * @returns The decoded string
+   * Decodes base64 string safely
+   * @param token - Base64 encoded token to decode
+   * @param errorMessage - Error message to use when decoding fails
+   * @returns Decoded string
    * @throws {ValidationError} when base64 decoding fails
    */
   static validateBase64Decode(token: string, errorMessage: string): string {
@@ -312,8 +363,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates token integrity and base64 format structure
-   * @param token - The token string to validate
+   * Checks if token has valid base64 format
+   * @param token - Token string to check
    * @throws {ValidationError} when token format is invalid
    */
   static validateTokenIntegrity(token: string): void {
@@ -336,8 +387,8 @@ export class ErrorHandler {
   }
 
   /**
-   * Validates token data structure integrity and required fields
-   * @param tokenData - The token data object to validate
+   * Checks if token data has required fields and valid structure
+   * @param tokenData - Token data object to check
    * @throws {ValidationError} when token data structure is invalid
    */
   static validateTokenDataIntegrity(tokenData: unknown): void {
