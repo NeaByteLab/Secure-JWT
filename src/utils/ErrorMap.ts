@@ -19,6 +19,7 @@ export const errorCodes = {
 export const errorMessages = {
   // Data validation errors
   DATA_NULL_UNDEFINED: 'Data cannot be null or undefined',
+  DATA_EMPTY_STRING: 'Data cannot be an empty string',
   DATA_INVALID_TYPE: 'Invalid data type provided',
   DATA_NON_EMPTY_STRING: 'Data must be a non-empty string',
 

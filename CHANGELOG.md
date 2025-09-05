@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2025-09-06
+
+### Security
+- Fixed memory dump vulnerability by implementing private fields
+- Fixed cache poisoning vulnerability by making caches private
+- Enhanced input validation to reject empty strings
+- Converted all sensitive properties to private fields (#secret, #payloadCache, #verifyCache, #expireInMs, #version)
+
+### Bug Fixes
+- Added validation for empty string inputs
+- Improved error handling and messages
+- Enhanced code encapsulation and security
+
+### Documentation
+- Added TypeScript badge to README
+- Fixed license badge URL with proper .svg extension
+- Enhanced usage examples with version parameter
+- Added examples for different data types (strings, numbers, arrays)
+- Added Mermaid architecture diagrams for JWT encoding process
+- Added security layers visualization
+- Improved README structure and readability
+
+### Internal
+- Better encapsulation of sensitive data
+- Improved security posture
+- Enhanced error message coverage
+
+---
+
 ## [1.1.0] - 2025-09-06
 
 ### Added

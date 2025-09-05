@@ -53,6 +53,9 @@ export class ErrorHandler {
     if (data === null || data === undefined) {
       throw new ValidationError(getErrorMessage('DATA_NULL_UNDEFINED'))
     }
+    if (typeof data === 'string' && data.length === 0) {
+      throw new ValidationError(getErrorMessage('DATA_EMPTY_STRING'))
+    }
   }
 
   /**

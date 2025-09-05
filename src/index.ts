@@ -21,15 +21,15 @@ import {
  */
 export default class SecureJWT {
   /** Secret key for encryption */
-  private readonly secret: Buffer
+  readonly #secret: Buffer
   /** Expiration time in milliseconds */
-  private readonly expireInMs: number
+  readonly #expireInMs: number
   /** Token version */
-  private readonly version: string
+  readonly #version: string
   /** Cache for decrypted payload data */
-  private readonly payloadCache: Cache<unknown>
+  readonly #payloadCache: Cache<unknown>
   /** Cache for token verification results */
-  private readonly verifyCache: Cache<boolean>
+  readonly #verifyCache: Cache<boolean>
 
   /**
    * Creates a new SecureJWT instance
@@ -44,11 +44,11 @@ export default class SecureJWT {
     if (options.version !== undefined) {
       ErrorHandler.validateVersion(options.version)
     }
-    this.secret = this.generateSecret(options.secret)
-    this.expireInMs = parsetimeToMs(options.expireIn)
-    this.version = options.version ?? '1.0.0'
-    this.payloadCache = new Cache<unknown>(options.cached ?? 1000, this.expireInMs)
-    this.verifyCache = new Cache<boolean>(options.cached ?? 1000, this.expireInMs)
+    this.#secret = this.generateSecret(options.secret)
+    this.#expireInMs = parsetimeToMs(options.expireIn)
+    this.#version = options.version ?? '1.0.0'
+    this.#payloadCache = new Cache<unknown>(options.cached ?? 1000, this.#expireInMs)
+    this.#verifyCache = new Cache<boolean>(options.cached ?? 1000, this.#expireInMs)
   }
 
   /**
@@ -72,10 +72,10 @@ export default class SecureJWT {
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
     const iv = randomBytes(16)
-    const key = this.secret.subarray(0, 32)
+    const key = this.#secret.subarray(0, 32)
     ErrorHandler.validateKeyLength(key)
     const cipher = createCipheriv('aes-256-gcm', key, iv)
-    cipher.setAAD(Buffer.from(`secure-jwt-${this.version}`, 'utf8'))
+    cipher.setAAD(Buffer.from(`secure-jwt-${this.#version}`, 'utf8'))
     let encrypted = cipher.update(data, 'utf8', 'hex')
     encrypted += cipher.final('hex')
     const tag = cipher.getAuthTag()
@@ -95,12 +95,12 @@ export default class SecureJWT {
   private decrypt(tokenEncrypted: TokenEncrypted): string {
     try {
       ErrorHandler.validateTokenEncrypted(tokenEncrypted)
-      const key = this.secret.subarray(0, 32)
+      const key = this.#secret.subarray(0, 32)
       ErrorHandler.validateKeyLength(key)
       ErrorHandler.validateIVFormat(tokenEncrypted.iv)
       ErrorHandler.validateTagFormat(tokenEncrypted.tag)
       const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(tokenEncrypted.iv, 'hex'))
-      decipher.setAAD(Buffer.from(`secure-jwt-${this.version}`, 'utf8'))
+      decipher.setAAD(Buffer.from(`secure-jwt-${this.#version}`, 'utf8'))
       decipher.setAuthTag(Buffer.from(tokenEncrypted.tag, 'hex'))
       let decrypted = decipher.update(tokenEncrypted.encrypted, 'hex', 'utf8')
       decrypted += decipher.final('utf8')
@@ -124,14 +124,14 @@ export default class SecureJWT {
     try {
       ErrorHandler.validateData(data)
       const now = Math.floor(Date.now() / 1000)
-      const exp = now + Math.floor(this.expireInMs / 1000)
+      const exp = now + Math.floor(this.#expireInMs / 1000)
       const maxExp = now + 365 * 24 * 60 * 60
       ErrorHandler.validateExpiration(exp, maxExp)
       const payload: PayloadData = {
         data,
         exp,
         iat: now,
-        version: this.version
+        version: this.#version
       }
       const payloadString = JSON.stringify(payload)
       ErrorHandler.validatePayloadSize(payloadString)
@@ -142,7 +142,7 @@ export default class SecureJWT {
         tag: tokenEncrypted.tag,
         exp,
         iat: now,
-        version: this.version
+        version: this.#version
       }
       const tokenString = JSON.stringify(tokenData)
       return Buffer.from(tokenString).toString('base64')
@@ -167,8 +167,8 @@ export default class SecureJWT {
    */
   verify(token: string): boolean {
     try {
-      if (this.verifyCache.has(token)) {
-        const cachedResult = this.verifyCache.get(token)
+      if (this.#verifyCache.has(token)) {
+        const cachedResult = this.#verifyCache.get(token)
         if (cachedResult !== undefined) {
           return cachedResult
         }
@@ -185,10 +185,10 @@ export default class SecureJWT {
       )
       ErrorHandler.validateTokenDataIntegrity(tokenData)
       if (!isValidTokenData(tokenData)) {
-        this.verifyCache.set(token, false, 0)
+        this.#verifyCache.set(token, false, 0)
         return false
       }
-      ErrorHandler.validateVersionCompatibility(tokenData.version, this.version)
+      ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
       ErrorHandler.checkTokenExpiration(tokenData.exp)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
@@ -201,16 +201,16 @@ export default class SecureJWT {
         getErrorMessage('INVALID_PAYLOAD_STRUCTURE')
       )
       if (!isValidPayloadData(payload)) {
-        this.verifyCache.set(token, false, 0)
+        this.#verifyCache.set(token, false, 0)
         return false
       }
       ErrorHandler.validateVersionCompatibility(payload.version, tokenData.version)
       ErrorHandler.checkTokenExpiration(payload.exp)
       ErrorHandler.validateTokenTimestamps(payload.exp, tokenData.exp, payload.iat, tokenData.iat)
-      this.verifyCache.set(token, true, Math.max(0, payload.exp * 1000 - Date.now()))
+      this.#verifyCache.set(token, true, Math.max(0, payload.exp * 1000 - Date.now()))
       return true
     } catch {
-      this.verifyCache.set(token, false, 0)
+      this.#verifyCache.set(token, false, 0)
       return false
     }
   }
@@ -238,7 +238,7 @@ export default class SecureJWT {
     if (!isValidTokenData(tokenData)) {
       throw new ValidationError(getErrorMessage('INVALID_TOKEN_DATA_STRUCTURE'))
     }
-    ErrorHandler.validateVersionCompatibility(tokenData.version, this.version)
+    ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
     ErrorHandler.checkTokenExpiration(tokenData.exp)
     const tokenEncrypted: TokenEncrypted = {
       encrypted: tokenData.encrypted,
@@ -269,8 +269,8 @@ export default class SecureJWT {
    */
   decode(token: string): unknown {
     try {
-      if (this.payloadCache.has(token)) {
-        const cachedResult = this.payloadCache.get(token)
+      if (this.#payloadCache.has(token)) {
+        const cachedResult = this.#payloadCache.get(token)
         if (cachedResult !== undefined) {
           return cachedResult
         }
@@ -289,7 +289,7 @@ export default class SecureJWT {
       if (!isValidTokenData(tokenData)) {
         throw new ValidationError(getErrorMessage('INVALID_TOKEN_DATA_STRUCTURE'))
       }
-      ErrorHandler.validateVersionCompatibility(tokenData.version, this.version)
+      ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
       ErrorHandler.checkTokenExpiration(tokenData.exp)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
@@ -307,7 +307,7 @@ export default class SecureJWT {
       ErrorHandler.validateVersionCompatibility(payload.version, tokenData.version)
       ErrorHandler.checkTokenExpiration(payload.exp)
       ErrorHandler.validateTokenTimestamps(payload.exp, tokenData.exp, payload.iat, tokenData.iat)
-      this.payloadCache.set(token, payload.data, Math.max(0, payload.exp * 1000 - Date.now()))
+      this.#payloadCache.set(token, payload.data, Math.max(0, payload.exp * 1000 - Date.now()))
       return payload.data
     } catch (error) {
       if (
