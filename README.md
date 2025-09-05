@@ -2,8 +2,9 @@
 
 ![npm version](https://img.shields.io/npm/v/@neabyte/secure-jwt)
 ![node version](https://img.shields.io/node/v/@neabyte/secure-jwt)
+![typescript version](https://img.shields.io/badge/typeScript-5.9.2-blue.svg)
 ![coverage](https://img.shields.io/badge/coverage-99.08%25-brightgreen)
-![license](https://img.shields.io/npm/l/@neabyte/secure-jwt)
+![license](https://img.shields.io/npm/l/@neabyte/secure-jwt.svg)
 
 A secure JWT implementation with AES-256-GCM encryption for Node.js applications.
 
