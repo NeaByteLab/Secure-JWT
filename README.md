@@ -110,9 +110,9 @@ const arrayToken: string = jwt.sign([1, 2, 3])
 
 ```javascript
 const jwt = new SecureJWT({
+  algorithm: 'aes-256-gcm',      // Optional: default: 'aes-256-gcm'
   secret: 'your-secret-key',     // Required: 8-255 characters
   expireIn: '1h',                // Required: Time string
-  algorithm: 'aes-256-gcm',      // Optional: default: 'aes-256-gcm'
   version: '1.0.0',              // Optional: Default '1.0.0'
   cached: 1000                   // Optional: Cache size (default: 1000)
 })
@@ -227,7 +227,7 @@ try {
 graph TD
     A[User Data] --> B[Sign Request]
     B --> C[Create Payload]
-    C --> D[AES-256-GCM Encrypt]
+    C --> D[Multi Algorithm Encryption]
     D --> E[Generate Token]
     E --> F[Store in Cache]
     F --> G[Return Token]
@@ -261,7 +261,7 @@ graph TD
 
 ### 🔐 JWT Encoding Process
 
-> This diagram details the token creation process with AES-256-GCM encryption. Each token gets a **random IV** for uniqueness, **version-based AAD** for compatibility, and **authentication tags** for tamper detection. The **caching system** stores encrypted tokens for instant retrieval, providing massive performance improvements for repeated verifications.
+> This diagram details the token creation process with **multi-algorithm encryption**. Each token gets a **random IV** for uniqueness, **version-based AAD** for compatibility, and **authentication tags** for tamper detection. The **caching system** stores encrypted tokens for instant retrieval, providing massive performance improvements for repeated verifications.
 
 ```mermaid
 graph TD
@@ -269,7 +269,7 @@ graph TD
     B --> C[Add Timestamps & Version]
     C --> D[JSON Stringify Payload]
     D --> E[Generate Random IV]
-    E --> F[AES-256-GCM Encryption]
+    E --> F[Multi Algorithm Encryption]
     F --> G[Create Token Structure]
     G --> H[Base64 Encode]
     H --> I[Secure JWT Token]
