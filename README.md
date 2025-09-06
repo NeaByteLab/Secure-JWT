@@ -31,35 +31,16 @@ npm install @neabyte/secure-jwt
 
 ## 🚀 Usage
 
-### CommonJS
+### JavaScript (CommonJS & ESM)
 
 ```javascript
+// CommonJS
 const SecureJWT = require('@neabyte/secure-jwt').default
 
-const jwt = new SecureJWT({
-  secret: 'your-secret-key-here',
-  expireIn: '1h',
-  version: '1.0.0',
-  cached: 1000
-})
-
-// Encode any data type
-const data = { userId: 123, role: 'admin' }
-const token = jwt.sign(data)
-const isValid = jwt.verify(token)
-const decoded = jwt.decode(token)
-
-// Also works with strings, numbers, arrays, etc.
-const stringToken = jwt.sign('Hello World!')
-const numberToken = jwt.sign(42)
-const arrayToken = jwt.sign([1, 2, 3])
-```
-
-### ES Modules (ESM)
-
-```javascript
+// ES Modules (ESM)
 import SecureJWT from '@neabyte/secure-jwt'
 
+// Usage (same for both)
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
   expireIn: '1h',
@@ -168,16 +149,101 @@ new SecureJWT(options: JWTOptions)
 ### Methods
 
 #### `sign(data: unknown): string`
-Creates encrypted JWT token from data.
+Creates an encrypted JWT token from any data type.
+
+**Parameters:**
+- `data: unknown` - The data to encrypt (objects, strings, numbers, arrays, etc.)
+
+**Returns:**
+- `string` - Encrypted JWT token
+
+**Example:**
+```javascript
+const token = jwt.sign({ userId: 123, role: 'admin' })
+const stringToken = jwt.sign('Hello World!')
+const numberToken = jwt.sign(42)
+```
+
+**Throws:**
+- `PayloadTooLargeError` - If payload exceeds 8KB limit
+- `EncryptionError` - If encryption fails
+
+---
 
 #### `verify(token: string): boolean`
-Validates token, returns true/false.
+Validates token integrity and expiration.
+
+**Parameters:**
+- `token: string` - The JWT token to validate
+
+**Returns:**
+- `boolean` - `true` if valid, `false` if invalid or expired
+
+**Example:**
+```javascript
+const isValid = jwt.verify(token)
+if (isValid) {
+  console.log('Token is valid')
+} else {
+  console.log('Token is invalid or expired')
+}
+```
+
+---
 
 #### `verifyStrict(token: string): void`
-Validates token, throws specific errors.
+Validates token and throws specific errors for detailed handling.
+
+**Parameters:**
+- `token: string` - The JWT token to validate
+
+**Returns:**
+- `void` - Throws error if invalid
+
+**Example:**
+```javascript
+try {
+  jwt.verifyStrict(token)
+  console.log('Token is valid')
+} catch (error) {
+  console.log('Token error:', error.message)
+}
+```
+
+**Throws:**
+- `TokenExpiredError` - If token has expired
+- `TokenInvalidError` - If token format is invalid
+- `VersionMismatchError` - If token version doesn't match
+- `DecryptionError` - If decryption fails
+
+---
 
 #### `decode(token: string): unknown`
-Extracts data from token, throws on error.
+Extracts and decrypts data from token.
+
+**Parameters:**
+- `token: string` - The JWT token to decode
+
+**Returns:**
+- `unknown` - The original data that was encrypted
+
+**Example:**
+```javascript
+try {
+  const data = jwt.decode(token)
+  console.log('Decoded data:', data)
+} catch (error) {
+  console.log('Decode error:', error.message)
+}
+```
+
+**Throws:**
+- `TokenExpiredError` - If token has expired
+- `TokenInvalidError` - If token format is invalid
+- `VersionMismatchError` - If token version doesn't match
+- `DecryptionError` - If decryption fails
+
+---
 
 ## ❌ Error Handling
 
