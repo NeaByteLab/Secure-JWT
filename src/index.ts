@@ -173,29 +173,11 @@ export default class SecureJWT {
    */
   verify(token: string): boolean {
     try {
-      if (this.#verifyCache.has(token)) {
-        const cachedResult = this.#verifyCache.get(token)
-        if (cachedResult !== undefined) {
-          return cachedResult
-        }
+      const cachedResult = this.#verifyCache.get(token)
+      if (cachedResult !== undefined) {
+        return cachedResult
       }
-      ErrorHandler.validateToken(token)
-      ErrorHandler.validateTokenIntegrity(token)
-      const decoded = ErrorHandler.validateBase64Decode(
-        token,
-        getErrorMessage('INVALID_TOKEN_FORMAT')
-      )
-      const tokenData = ErrorHandler.validateJSONParse<TokenData>(
-        decoded,
-        getErrorMessage('INVALID_TOKEN_STRUCTURE')
-      )
-      ErrorHandler.validateTokenDataIntegrity(tokenData)
-      if (!isValidTokenData(tokenData)) {
-        this.#verifyCache.set(token, false, 0)
-        return false
-      }
-      ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
-      ErrorHandler.checkTokenExpiration(tokenData.exp)
+      const tokenData = this.validateAndParseToken(token)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
         iv: tokenData.iv,
@@ -230,22 +212,7 @@ export default class SecureJWT {
    * @throws {VersionMismatchError} When token version is incompatible
    */
   verifyStrict(token: string): void {
-    ErrorHandler.validateToken(token)
-    ErrorHandler.validateTokenIntegrity(token)
-    const decoded = ErrorHandler.validateBase64Decode(
-      token,
-      getErrorMessage('INVALID_TOKEN_FORMAT')
-    )
-    const tokenData = ErrorHandler.validateJSONParse<TokenData>(
-      decoded,
-      getErrorMessage('INVALID_TOKEN_STRUCTURE')
-    )
-    ErrorHandler.validateTokenDataIntegrity(tokenData)
-    if (!isValidTokenData(tokenData)) {
-      throw new ValidationError(getErrorMessage('INVALID_TOKEN_DATA_STRUCTURE'))
-    }
-    ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
-    ErrorHandler.checkTokenExpiration(tokenData.exp)
+    const tokenData = this.validateAndParseToken(token)
     const tokenEncrypted: TokenEncrypted = {
       encrypted: tokenData.encrypted,
       iv: tokenData.iv,
@@ -275,28 +242,11 @@ export default class SecureJWT {
    */
   decode(token: string): unknown {
     try {
-      if (this.#payloadCache.has(token)) {
-        const cachedResult = this.#payloadCache.get(token)
-        if (cachedResult !== undefined) {
-          return cachedResult
-        }
+      const cachedResult = this.#payloadCache.get(token)
+      if (cachedResult !== undefined) {
+        return cachedResult
       }
-      ErrorHandler.validateToken(token)
-      ErrorHandler.validateTokenIntegrity(token)
-      const decoded = ErrorHandler.validateBase64Decode(
-        token,
-        getErrorMessage('INVALID_TOKEN_FORMAT')
-      )
-      const tokenData = ErrorHandler.validateJSONParse<TokenData>(
-        decoded,
-        getErrorMessage('INVALID_TOKEN_STRUCTURE')
-      )
-      ErrorHandler.validateTokenDataIntegrity(tokenData)
-      if (!isValidTokenData(tokenData)) {
-        throw new ValidationError(getErrorMessage('INVALID_TOKEN_DATA_STRUCTURE'))
-      }
-      ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
-      ErrorHandler.checkTokenExpiration(tokenData.exp)
+      const tokenData = this.validateAndParseToken(token)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
         iv: tokenData.iv,
@@ -328,6 +278,35 @@ export default class SecureJWT {
         `${getErrorMessage('DECODE_FAILED')}: ${error instanceof Error ? error.message : getErrorMessage('UNKNOWN_ERROR')}`
       )
     }
+  }
+
+  /**
+   * Validates and parses token data
+   * @param token - Base64 encoded token to validate
+   * @returns Parsed token data
+   * @throws {ValidationError} When token format is invalid
+   * @throws {TokenExpiredError} When token has expired
+   * @throws {DecryptionError} When token decryption fails
+   * @throws {VersionMismatchError} When token version is incompatible
+   */
+  private validateAndParseToken(token: string): TokenData {
+    ErrorHandler.validateToken(token)
+    ErrorHandler.validateTokenIntegrity(token)
+    const decoded = ErrorHandler.validateBase64Decode(
+      token,
+      getErrorMessage('INVALID_TOKEN_FORMAT')
+    )
+    const tokenData = ErrorHandler.validateJSONParse<TokenData>(
+      decoded,
+      getErrorMessage('INVALID_TOKEN_STRUCTURE')
+    )
+    ErrorHandler.validateTokenDataIntegrity(tokenData)
+    if (!isValidTokenData(tokenData)) {
+      throw new ValidationError(getErrorMessage('INVALID_TOKEN_DATA_STRUCTURE'))
+    }
+    ErrorHandler.validateVersionCompatibility(tokenData.version, this.#version)
+    ErrorHandler.checkTokenExpiration(tokenData.exp)
+    return tokenData
   }
 }
 

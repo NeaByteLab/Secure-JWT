@@ -1,7 +1,7 @@
 {
   "name": "@neabyte/secure-jwt",
   "description": "A secure JWT library with multiple encryption algorithms, zero dependencies, and built-in security for Node.js applications.",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

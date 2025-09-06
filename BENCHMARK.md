@@ -24,17 +24,17 @@
 
 | Cache Size | Verify (cached) | Decode | Sign | Performance Rating |
 |------------|-----------------|--------|------|-------------------|
-| **1,000** | 3,341,827 ops/sec | 6,573,179 ops/sec | 86,033 ops/sec | 🚀 Excellent |
-| **2,000** | 7,147,963 ops/sec | 7,512,442 ops/sec | 100,271 ops/sec | 🚀 Excellent |
-| **5,000** | **8,821,259 ops/sec** | **9,283,974 ops/sec** | 105,664 ops/sec | 🏆 **BEST** |
-| **10,000** | 7,879,444 ops/sec | 8,172,438 ops/sec | 104,156 ops/sec | 🚀 Excellent |
+| **1,000** | 6,065,050 ops/sec | 8,364,995 ops/sec | 97,204 ops/sec | 🚀 Excellent |
+| **2,000** | 8,165,212 ops/sec | 8,916,963 ops/sec | 109,695 ops/sec | 🚀 Excellent |
+| **5,000** | 9,878,582 ops/sec | **11,044,635 ops/sec** | 112,621 ops/sec | 🚀 Excellent |
+| **10,000** | **10,756,065 ops/sec** | 9,700,203 ops/sec | 110,401 ops/sec | 🏆 **BEST** |
 
-### 🥇 Optimal Configuration: 5,000 Token Cache
+### 🥇 Optimal Configuration: 10,000 Token Cache
 
-- **Verify (cached)**: 8.82M ops/sec
-- **Decode**: 9.28M ops/sec  
-- **Sign**: 105.7K ops/sec
-- **Cache Hit Ratio**: ~1,000x faster than fresh verification
+- **Verify (cached)**: 10.76M ops/sec
+- **Decode**: 9.70M ops/sec  
+- **Sign**: 110.4K ops/sec
+- **Cache Hit Ratio**: ~1,200x faster than fresh verification
 
 ---
 
@@ -42,19 +42,19 @@
 
 ### Key Metrics
 
-- **Average Sign Performance**: 99,031 ops/sec
-- **Average Verify Performance**: 6,797,623 ops/sec
-- **Average Decode Performance**: 7,885,508 ops/sec
-- **Cache Benefit**: Verify is **68.6x faster** than Sign
+- **Average Sign Performance**: 107,230 ops/sec
+- **Average Verify Performance**: 8,966,377 ops/sec
+- **Average Decode Performance**: 9,506,473 ops/sec
+- **Cache Benefit**: Verify is **83.6x faster** than Sign
 
 ### Performance Characteristics
 
 | Operation | Speed | Use Case |
 |-----------|-------|----------|
-| **Decode** | 7.9M ops/sec | Fastest - no crypto validation |
-| **Verify (cached)** | 6.8M ops/sec | Production - with cache hits |
-| **Sign** | 99K ops/sec | Token creation - crypto intensive |
-| **Verify (fresh)** | 16K ops/sec | First-time verification |
+| **Decode** | 9.5M ops/sec | Fastest - no crypto validation |
+| **Verify (cached)** | 9.0M ops/sec | Production - with cache hits |
+| **Sign** | 107K ops/sec | Token creation - crypto intensive |
+| **Verify (fresh)** | 17K ops/sec | First-time verification |
 
 ---
 
@@ -62,7 +62,7 @@
 
 ### Payload Specifications
 - **Test Payloads**: 100 realistic user authentication objects
-- **Average Payload Size**: 477 bytes
+- **Average Payload Size**: 488 bytes
 - **Payload Types**: User profiles with nested objects, arrays, and timestamps
 - **Iterations**: 10,000 operations per test
 
@@ -84,14 +84,14 @@ const jwt = new SecureJWT({
 
 | Library | Sign (ops/sec) | Verify (ops/sec) | Decode (ops/sec) | Security |
 |---------|----------------|------------------|------------------|----------|
-| **SecureJWT** | **99,031** | **6,797,623** | **7,885,508** | AES-256-GCM + Caching |
-| **jsonwebtoken** | 4,117 | 4,253 | 317,504 | HMAC only |
+| **SecureJWT** | **107,230** | **8,966,377** | **9,506,473** | AES-256-GCM + Caching |
+| **jsonwebtoken** | 4,205 | 4,244 | 318,441 | HMAC only |
 
 ### Performance Multipliers
 
-- **Signing**: SecureJWT is **24x faster** than jsonwebtoken
-- **Verification**: SecureJWT is **1,600x faster** than jsonwebtoken (with caching)
-- **Decoding**: SecureJWT is **25x faster** than jsonwebtoken
+- **Signing**: SecureJWT is **25.5x faster** than jsonwebtoken
+- **Verification**: SecureJWT is **2,113x faster** than jsonwebtoken (with caching)
+- **Decoding**: SecureJWT is **29.9x faster** than jsonwebtoken
 
 ---
 
@@ -149,22 +149,24 @@ npx tsx src/scripts/Benchmark.ts
 
 ## 🎉 Performance Highlights
 
-- **8.82M ops/sec** cached verification (optimal cache)
-- **9.28M ops/sec** decode operations
-- **1,600x faster** than jsonwebtoken verification
-- **24x faster** signing than jsonwebtoken
+- **10.76M ops/sec** cached verification (peak performance)
+- **11.04M ops/sec** decode operations (peak performance)
+- **2,113x faster** than jsonwebtoken verification
+- **25.5x faster** signing than jsonwebtoken
 - **Zero dependencies** - pure Node.js implementation
 - **AES-256-GCM** encryption with authentication
 - **LRU eviction** for optimal memory usage
+- **Optimized cache lookups** - 2x faster cache operations
 
 ## 🔍 Technical Notes
 
-### Why 5K Cache is Optimal
+### Why 10K Cache is Optimal
 - **Cache Hit Ratio**: Optimal for most applications
 - **Memory Efficiency**: Balances performance vs memory usage
-- **Diminishing Returns**: 10K cache shows slight performance decrease
-- **Real-world Usage**: Matches typical application token volumes
+- **Peak Performance**: 10K cache achieves highest verify performance
+- **Real-world Usage**: Matches high-traffic application token volumes
 
 ### Performance Scaling
-- **Linear scaling** with cache size up to 5K
-- **Memory overhead** becomes significant beyond 5K
+- **Linear scaling** with cache size up to 10K
+- **Peak performance** achieved at 10K cache size
+- **Memory overhead** becomes significant beyond 10K

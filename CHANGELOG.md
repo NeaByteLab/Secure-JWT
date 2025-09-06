@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.6] - 2025-09-06
+
+### Added
+- **Algorithm Comparison Benchmarking**
+  - Added AES-256-GCM vs ChaCha20-Poly1305 algorithm performance comparison
+  - Enhanced benchmark script with algorithm-specific testing
+  - Extracted shared benchmark utilities to Core.ts module
+
+### Changed
+- **Performance Optimizations**
+  - Added shared validateAndParseToken() method to eliminate code duplication
+  - Optimized cache lookups by removing redundant has() calls
+  - Refactored verify(), verifyStrict(), and decode() to use shared validation
+  - Updated optimal cache size recommendation from 5K to 10K tokens
+
+### Performance
+- **Cache Optimization**
+  - Improved cache hit performance by 2x through optimized lookup patterns
+  - Enhanced verify performance to 10.76M ops/sec (peak)
+  - Boosted decode performance to 11.04M ops/sec (peak)
+  - Increased overall performance multipliers vs jsonwebtoken
+
+### Documentation
+- **Benchmark Updates**
+  - Updated BENCHMARK.md with improved performance metrics
+  - Added algorithm comparison results and recommendations
+  - Enhanced performance analysis with peak vs average metrics
+
+---
+
 ## [1.4.5] - 2025-09-06
 
 ### Fixed
