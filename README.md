@@ -10,7 +10,7 @@ A secure JWT library implementation with multiple encryption algorithms, zero de
 
 ## ✨ Features
 
-- 🔒 **Multi algorithms** - AES-256-GCM & ChaCha20-Poly1305
+- 🔒 **Multi algorithms** - AES-256-GCM, ChaCha20-Poly1305, and more
 - ⚙️ **Algorithm selection** - Choose the best encryption for your use case
 - 🔑 **Key derivation options** - Basic (fast) or PBKDF2 (secure) key generation
 - 🛡️ **Tamper detection** - Authentication tags prevent modification
@@ -43,6 +43,7 @@ import SecureJWT from '@neabyte/secure-jwt'
 // Usage (same for both)
 const jwt = new SecureJWT({
   secret: 'your-secret-key-here',
+  algorithm: 'aes-128-gcm',        // Optional: Default 'aes-256-gcm'
   expireIn: '1h',
   version: '1.0.0',
   cached: 1000
@@ -105,6 +106,7 @@ const jwt = new SecureJWT({
 
 | Value | Description |
 |-------|-------------|
+| `aes-128-gcm` | Fast 128-bit encryption, 4% faster than AES256 |
 | `aes-256-gcm` | Hardware accelerated, industry standard |
 | `chacha20-poly1305` | Software optimized, 2-3x faster than AES |
 

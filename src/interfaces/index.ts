@@ -1,7 +1,7 @@
 /**
  * Available encryption algorithms
  */
-export type EncryptionAlgo = 'aes-256-gcm' | 'chacha20-poly1305'
+export type EncryptionAlgo = 'aes-128-gcm' | 'aes-256-gcm' | 'chacha20-poly1305'
 
 /**
  * Available key derivation algorithms
@@ -117,6 +117,8 @@ export interface IEncryptionAlgo {
   decrypt(tokenEncrypted: TokenEncrypted, key: Buffer, version: string): string
   /** Returns the required IV length for the algorithm */
   getIVLength(): number
+  /** Returns the required key length for the algorithm */
+  getKeyLength(): number
   /** Returns the algorithm name */
   getAlgoName(): EncryptionAlgo
 }

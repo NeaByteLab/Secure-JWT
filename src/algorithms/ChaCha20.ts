@@ -59,6 +59,14 @@ export default class ChaCha20 implements IEncryptionAlgo {
   }
 
   /**
+   * Gets the required key length for ChaCha20-Poly1305
+   * @returns Key length in bytes (32)
+   */
+  getKeyLength(): number {
+    return 32
+  }
+
+  /**
    * Gets the algorithm name
    * @returns Algorithm name string
    */

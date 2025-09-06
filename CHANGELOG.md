@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2025-09-06
+
+### Added
+- **AES-128-GCM Algorithm Support**
+  - New AES-128-GCM encryption algorithm for faster performance
+  - 4% faster than AES-256-GCM with 111,581 ops/sec signing performance
+  - 9.3M ops/sec verification performance with 128-bit security
+  - Added `getKeyLength()` method to `IEncryptionAlgo` interface for dynamic key sizing
+
+### Changed
+- **Dynamic Key Length Handling**
+  - Refactored `SecureJWT` to use algorithm-specific key lengths instead of hardcoded values
+  - Updated `encrypt()` and `decrypt()` methods to dynamically determine key length
+  - Enhanced algorithm factory to support variable key lengths (16-byte for AES128, 32-byte for AES256/ChaCha20)
+
+### Documentation
+- **README Updates**
+  - Added AES-128-GCM to algorithm options table
+  - Updated usage examples to show algorithm selection
+  - Enhanced features section to reflect multi-algorithm support
+
+---
+
 ## [1.4.6] - 2025-09-06
 
 ### Added

@@ -92,7 +92,8 @@ export default class SecureJWT {
    */
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
-    const key = this.#secret.subarray(0, 32)
+    const keyLength = this.#algorithm.getKeyLength()
+    const key = this.#secret.subarray(0, keyLength)
     ErrorHandler.validateKeyLength(key)
     const iv = Algorithms.getRandomBytes(this.#algorithm.getIVLength())
     return this.#algorithm.encrypt(data, key, iv, this.#version)
@@ -106,7 +107,8 @@ export default class SecureJWT {
   private decrypt(tokenEncrypted: TokenEncrypted): string {
     try {
       ErrorHandler.validateTokenEncrypted(tokenEncrypted)
-      const key = this.#secret.subarray(0, 32)
+      const keyLength = this.#algorithm.getKeyLength()
+      const key = this.#secret.subarray(0, keyLength)
       ErrorHandler.validateKeyLength(key)
       ErrorHandler.validateIVFormat(tokenEncrypted.iv)
       ErrorHandler.validateTagFormat(tokenEncrypted.tag)

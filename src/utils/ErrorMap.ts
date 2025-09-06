@@ -106,7 +106,7 @@ export const errorMessages = {
   INVALID_KEY_LENGTH: 'Invalid key length for AES-256',
   FAILED_TO_GENERATE_AUTH_TAG: 'Failed to generate authentication tag',
   INVALID_ALGORITHM:
-    'Invalid encryption algorithm. Supported algorithms: aes-256-gcm, chacha20-poly1305',
+    'Invalid encryption algorithm. Supported algorithms: aes-128-gcm, aes-256-gcm, chacha20-poly1305',
 
   // Token encrypted errors
   TOKEN_ENCRYPTED_MUST_BE_OBJECT: 'TokenEncrypted must be a valid object',

@@ -8,7 +8,7 @@ import type { EncryptionAlgo } from '../interfaces/index'
  * Tests JWT operations with various cache configurations
  */
 for (const cacheSize of cacheSizes) {
-  const algorithmList = ['aes-256-gcm', 'chacha20-poly1305']
+  const algorithmList = ['aes-128-gcm', 'aes-256-gcm', 'chacha20-poly1305']
   for (const algorithm of algorithmList) {
     console.log(`\n🗄️  Algorithm: ${algorithm}`)
     console.log(`📈  Cache Size: ${cacheSize.toLocaleString()} tokens`)

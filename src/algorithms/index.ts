@@ -1,4 +1,5 @@
 import { randomBytes, pbkdf2Sync } from 'node:crypto'
+import AES128 from '@algorithms/AES128'
 import AES256 from '@algorithms/AES256'
 import ChaCha20 from '@algorithms/ChaCha20'
 import { EncryptionError, getErrorMessage } from '@utils/index'
@@ -46,7 +47,9 @@ export default class Algorithms {
    * @throws {EncryptionError} When algorithm is not supported
    */
   static getInstance(algorithm: EncryptionAlgo): IEncryptionAlgo {
-    if (algorithm === 'aes-256-gcm') {
+    if (algorithm === 'aes-128-gcm') {
+      return new AES128()
+    } else if (algorithm === 'aes-256-gcm') {
       return new AES256()
     } else if (algorithm === 'chacha20-poly1305') {
       return new ChaCha20()
