@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2025-09-06
+
+### Added
+- **Dual encryption algorithms**: AES-256-GCM and ChaCha20-Poly1305 support
+- **Algorithm selection**: Choose between AES-256-GCM (default) or ChaCha20-Poly1305
+- **Factory pattern**: Scalable algorithm management system
+- **Algorithm unit tests**: Unit test coverage for both algorithms
+- **Performance comparison**: ChaCha20-Poly1305 is 2-3x faster for verification
+- **Algorithm documentation**: Updated README with algorithm selection guide
+
+### Changed
+- **SecureJWT constructor**: Added optional `algorithm` parameter
+- **Encryption abstraction**: Refactored to use algorithm factory pattern
+- **README updates**: Enhanced with dual algorithm documentation and performance metrics
+- **Coverage badge**: Updated to 98.28%
+
+### Technical
+- **Algorithm interface**: Created `IEncryptionAlgo` interface for algorithm abstraction
+- **Factory implementation**: `Algorithms` class for algorithm instance management
+- **TypeScript support**: Added path aliases for algorithm modules
+- **Jest configuration**: Updated to support new algorithm test files
+
+---
+
 ## [1.2.0] - 2025-09-06
 
 ### Breaking Changes

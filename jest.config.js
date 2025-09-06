@@ -24,6 +24,8 @@ export default {
   coverageReporters: ['text', 'lcov', 'html'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@algorithms/(.*)$': '<rootDir>/src/algorithms/$1',
+    '^@interfaces/(.*)$': '<rootDir>/src/interfaces/$1',
     '^@types/(.*)$': '<rootDir>/src/types/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1'
   },

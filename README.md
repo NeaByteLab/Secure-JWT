@@ -3,14 +3,15 @@
 ![npm version](https://img.shields.io/npm/v/@neabyte/secure-jwt)
 ![node version](https://img.shields.io/node/v/@neabyte/secure-jwt)
 ![typescript version](https://img.shields.io/badge/typeScript-5.9.2-blue.svg)
-![coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
+![coverage](https://img.shields.io/badge/coverage-98.28%25-brightgreen)
 ![license](https://img.shields.io/npm/l/@neabyte/secure-jwt.svg)
 
-A secure JWT implementation with AES-256-GCM encryption for Node.js applications.
+A secure JWT implementation with **AES-256-GCM** & **ChaCha20-Poly1305** algorithms for Node.js applications.
 
 ## ✨ Features
 
-- 🔒 **AES-256-GCM encryption** - Industry-standard security
+- 🔒 **Multi algorithms** - AES-256-GCM & ChaCha20-Poly1305
+- ⚙️ **Algorithm selection** - Choose the best encryption for your use case
 - 🛡️ **Tamper detection** - Authentication tags prevent modification
 - ⏰ **Automatic expiration** - Built-in token lifecycle management
 - 🔄 **Version compatibility** - Prevents downgrade attacks
@@ -111,10 +112,35 @@ const arrayToken: string = jwt.sign([1, 2, 3])
 const jwt = new SecureJWT({
   secret: 'your-secret-key',     // Required: 8-255 characters
   expireIn: '1h',                // Required: Time string
+  algorithm: 'aes-256-gcm',      // Optional: default: 'aes-256-gcm'
   version: '1.0.0',              // Optional: Default '1.0.0'
   cached: 1000                   // Optional: Cache size (default: 1000)
 })
 ```
+
+### 🔧 Algorithm Options
+
+Choose the encryption algorithm that best fits your needs:
+
+```javascript
+// AES-256-GCM (default) - Hardware accelerated, industry standard
+const jwtAES = new SecureJWT({
+  algorithm: 'aes-256-gcm',
+  secret: 'key',
+  expireIn: '1h'
+})
+
+// ChaCha20-Poly1305 - Maximum performance, 2-3x faster
+const jwtChaCha = new SecureJWT({
+  algorithm: 'chacha20-poly1305',
+  secret: 'key',
+  expireIn: '1h'
+})
+```
+
+**Algorithm Comparison:**
+- **AES-256-GCM**: Hardware accelerated, widely supported, industry standard
+- **ChaCha20-Poly1305**: Software optimized, 2-3x faster, perfect for high-throughput applications
 
 ### Time Format
 
@@ -138,8 +164,12 @@ const jwt = new SecureJWT({
 ```javascript
 new SecureJWT(options: JWTOptions)
 ```
+**Available Algorithm:**
+- `aes-256-gcm`
+- `chacha20-poly1305`
 
 **Options:**
+- `algorithm?:` - Encryption algorithm (default: 'aes-256-gcm')
 - `secret: string` - Secret key (8-255 chars, required for security)
 - `expireIn: string` - Token expiration time (required for security)
 - `version?: string` - Token version (default: '1.0.0')

@@ -1,5 +1,11 @@
-import type { JWTOptions, TokenEncrypted, TokenData, PayloadData } from '@interfaces/index'
-import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
+import type {
+  JWTOptions,
+  TokenEncrypted,
+  TokenData,
+  PayloadData,
+  IEncryptionAlgo
+} from '@interfaces/index'
+import Algorithms from '@algorithms/index'
 import {
   Cache,
   ValidationError,
@@ -16,10 +22,12 @@ import {
 } from '@utils/index'
 
 /**
- * JWT implementation with encryption
- * Creates, verifies, and extracts data from tokens
+ * Secure JWT token handler with encryption support
+ * Handles token creation, verification, and data extraction
  */
 export default class SecureJWT {
+  /** Encryption algorithm */
+  readonly #algorithm: IEncryptionAlgo
   /** Secret key for encryption */
   readonly #secret: Buffer
   /** Expiration time in milliseconds */
@@ -32,8 +40,8 @@ export default class SecureJWT {
   readonly #verifyCache: Cache<boolean>
 
   /**
-   * Creates a new SecureJWT instance
-   * @param options - Configuration for token expiration, secret key, and version
+   * Initializes a new SecureJWT instance
+   * @param options - Token configuration including expiration, secret key, and version
    */
   constructor(options: JWTOptions) {
     ErrorHandler.validateOptions(options)
@@ -45,6 +53,7 @@ export default class SecureJWT {
     if (options.cached !== undefined) {
       ErrorHandler.validateCacheSize(options.cached)
     }
+    this.#algorithm = Algorithms.getInstance(options.algorithm ?? 'aes-256-gcm')
     this.#secret = this.generateSecret(options.secret)
     this.#expireInMs = parsetimeToMs(options.expireIn)
     this.#version = options.version ?? '1.0.0'
@@ -53,41 +62,31 @@ export default class SecureJWT {
   }
 
   /**
-   * Creates a secret key from the provided secret
-   * @param secret - Secret string for key creation
-   * @returns Buffer containing the secret key
+   * Generates a secret key from the provided secret string
+   * @param secret - Secret string to use for key generation
+   * @returns Buffer containing the generated secret key
    */
   private generateSecret(secret: string): Buffer {
-    const salt = randomBytes(32)
+    const salt = Algorithms.getRandomBytes(32)
     return Buffer.concat([salt, Buffer.from(secret, 'utf8')])
   }
 
   /**
-   * Encrypts data using AES-256-GCM encryption
+   * Encrypts data using the configured encryption algorithm
    * @param data - String data to encrypt
-   * @returns Object with encrypted data, initialization vector, and authentication tag
+   * @returns Object containing encrypted data, initialization vector, and authentication tag
    */
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
-    const iv = randomBytes(16)
     const key = this.#secret.subarray(0, 32)
     ErrorHandler.validateKeyLength(key)
-    const cipher = createCipheriv('aes-256-gcm', key, iv)
-    cipher.setAAD(Buffer.from(`secure-jwt-${this.#version}`, 'utf8'))
-    let encrypted = cipher.update(data, 'utf8', 'hex')
-    encrypted += cipher.final('hex')
-    const tag = cipher.getAuthTag()
-    ErrorHandler.validateAuthTag(tag)
-    return {
-      encrypted,
-      iv: iv.toString('hex'),
-      tag: tag.toString('hex')
-    }
+    const iv = Algorithms.getRandomBytes(this.#algorithm.getIVLength())
+    return this.#algorithm.encrypt(data, key, iv, this.#version)
   }
 
   /**
-   * Decrypts data using AES-256-GCM decryption
-   * @param tokenEncrypted - Object with encrypted data, initialization vector, and authentication tag
+   * Decrypts data using the configured encryption algorithm
+   * @param tokenEncrypted - Object containing encrypted data, initialization vector, and authentication tag
    * @returns Decrypted data as string
    */
   private decrypt(tokenEncrypted: TokenEncrypted): string {
@@ -97,12 +96,7 @@ export default class SecureJWT {
       ErrorHandler.validateKeyLength(key)
       ErrorHandler.validateIVFormat(tokenEncrypted.iv)
       ErrorHandler.validateTagFormat(tokenEncrypted.tag)
-      const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(tokenEncrypted.iv, 'hex'))
-      decipher.setAAD(Buffer.from(`secure-jwt-${this.#version}`, 'utf8'))
-      decipher.setAuthTag(Buffer.from(tokenEncrypted.tag, 'hex'))
-      let decrypted = decipher.update(tokenEncrypted.encrypted, 'hex', 'utf8')
-      decrypted += decipher.final('utf8')
-      return decrypted
+      return this.#algorithm.decrypt(tokenEncrypted, key, this.#version)
     } catch (error) {
       if (error instanceof ValidationError || error instanceof DecryptionError) {
         throw error
@@ -114,8 +108,8 @@ export default class SecureJWT {
   }
 
   /**
-   * Creates a JWT token from data
-   * @param data - Data to sign (will be JSON stringified)
+   * Generates a JWT token from data
+   * @param data - Data to include in the token (will be JSON stringified)
    * @returns JWT token string
    */
   sign(data: unknown): string {
@@ -159,8 +153,8 @@ export default class SecureJWT {
   }
 
   /**
-   * Validates if a JWT token is valid
-   * @param token - Base64 encoded token to check
+   * Checks if a JWT token is valid
+   * @param token - Base64 encoded token to validate
    * @returns Boolean indicating if token is valid and not expired
    */
   verify(token: string): boolean {
@@ -214,7 +208,7 @@ export default class SecureJWT {
   }
 
   /**
-   * Validates a JWT token and throws specific errors
+   * Validates a JWT token and throws specific errors on failure
    * @param token - Base64 encoded token to validate
    * @throws {ValidationError} When token format is invalid
    * @throws {TokenExpiredError} When token has expired

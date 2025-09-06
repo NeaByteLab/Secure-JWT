@@ -1,5 +1,10 @@
 /**
- * JWT payload structure
+ * Available encryption algorithms
+ */
+export type EncryptionAlgo = 'aes-256-gcm' | 'chacha20-poly1305'
+
+/**
+ * JWT token payload format
  */
 export interface JWTPayload {
   /** Actual data payload */
@@ -11,83 +16,100 @@ export interface JWTPayload {
 }
 
 /**
- * Configuration for JWT operations
+ * JWT token configuration settings
  */
 export interface JWTOptions {
-  /** Secret key for signing tokens (required for security) */
+  /** Encryption algorithm to use (default: 'aes-256-gcm') */
+  algorithm?: EncryptionAlgo
+  /** Secret key for token signing (required) */
   secret: string
-  /** Token expiration time as a string (e.g., '1h', '30m', '7d') */
+  /** Token expiration time as string (e.g., '1h', '30m', '7d') */
   expireIn: string
-  /** Version identifier for the token (optional) */
+  /** Token version identifier (optional) */
   version?: string
-  /** Cache configuration (optional) */
+  /** Cache settings (optional) */
   cached?: number
 }
 
 /**
- * Time value with its unit
+ * Time value and unit
  */
 export interface TimeUnit {
-  /** Numeric value of time */
+  /** Time value */
   value: number
-  /** Time unit (milliseconds, seconds, minutes, hours, days, months, years) */
+  /** Time unit (ms, s, m, h, d, M, y) */
   unit: 'ms' | 's' | 'm' | 'h' | 'd' | 'M' | 'y'
 }
 
 /**
- * Token data structure with encryption details and metadata
+ * Token data with encryption details
  */
 export interface TokenData {
-  /** Encrypted token content */
+  /** Encrypted content */
   encrypted: string
-  /** Initialization vector for decryption */
+  /** Initialization vector */
   iv: string
-  /** Authentication tag for verification */
+  /** Authentication tag */
   tag: string
-  /** Expiration timestamp in seconds */
+  /** Expiration timestamp (seconds) */
   exp: number
-  /** Issued at timestamp in seconds */
+  /** Issued at timestamp (seconds) */
   iat: number
-  /** Token version identifier */
+  /** Token version */
   version: string
 }
 
 /**
- * Encrypted token components for storage
+ * Encrypted token parts
  */
 export interface TokenEncrypted {
-  /** Encrypted token content */
+  /** Encrypted content */
   encrypted: string
-  /** Initialization vector for decryption */
+  /** Initialization vector */
   iv: string
-  /** Authentication tag for verification */
+  /** Authentication tag */
   tag: string
 }
 
 /**
- * Payload data structure with timing and version information
+ * Payload data with timing info
  */
 export interface PayloadData {
-  /** Actual payload data */
+  /** Payload data */
   data: unknown
-  /** Expiration timestamp in seconds */
+  /** Expiration timestamp (seconds) */
   exp: number
-  /** Issued at timestamp in seconds */
+  /** Issued at timestamp (seconds) */
   iat: number
-  /** Data version identifier */
+  /** Data version */
   version: string
 }
 
 /**
- * Cache entry structure with expiration and usage tracking
+ * Cache entry with expiration tracking
  */
 export interface CacheEntry<T> {
-  /** Stored data */
+  /** Cached data */
   data: T
-  /** When this entry expires (milliseconds since epoch) */
+  /** Expiration time (milliseconds since epoch) */
   expiresAt: number
-  /** When this entry was created (milliseconds since epoch) */
+  /** Creation time (milliseconds since epoch) */
   createdAt: number
-  /** Number of times this entry has been accessed */
+  /** Access count */
   accessCount: number
+}
+
+/**
+ * Encryption algorithm interface
+ * Contract for encrypting and decrypting token data
+ */
+export interface IEncryptionAlgo {
+  /** Encrypts data using the algorithm */
+  encrypt(data: string, key: Buffer, iv: Buffer, version: string): TokenEncrypted
+  /** Decrypts encrypted token data */
+  decrypt(tokenEncrypted: TokenEncrypted, key: Buffer, version: string): string
+  /** Returns the required IV length for the algorithm */
+  getIVLength(): number
+  /** Returns the algorithm name */
+  getAlgoName(): EncryptionAlgo
 }

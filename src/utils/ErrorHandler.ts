@@ -275,7 +275,7 @@ export class ErrorHandler {
    * @throws {DecryptionError} when IV format is invalid
    */
   static validateIVFormat(iv: string): void {
-    if (iv == null || !/^[0-9a-fA-F]{32}$/.test(iv)) {
+    if (iv == null || !/^[0-9a-fA-F]{24,32}$/.test(iv)) {
       throw new DecryptionError(getErrorMessage('INVALID_IV_FORMAT'))
     }
   }

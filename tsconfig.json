@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@algorithms/*": ["src/algorithms/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@utils/*": ["src/utils/*"]
     },
