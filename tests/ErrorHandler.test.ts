@@ -378,7 +378,7 @@ describe('ErrorHandler', () => {
     })
 
     it('should throw EncryptionError for invalid key length', () => {
-      const invalidKey = Buffer.alloc(8) // Too short
+      const invalidKey = Buffer.alloc(8)
       expect(() => ErrorHandler.validateKeyLength(invalidKey)).toThrow(EncryptionError)
     })
   })
@@ -414,7 +414,6 @@ describe('ErrorHandler', () => {
     })
 
     it('should throw EncryptionError for buffer with length 0 (forced coverage)', () => {
-      // Create a buffer and then slice it to length 0
       const buffer = Buffer.alloc(10)
       const emptyBuffer = buffer.slice(0, 0)
       expect(emptyBuffer).not.toBeNull()
@@ -424,7 +423,6 @@ describe('ErrorHandler', () => {
     })
 
     it('should throw EncryptionError for buffer with length 0 (debug test)', () => {
-      // Create a buffer with length 0 to ensure we hit the second condition
       const emptyBuffer = Buffer.alloc(0)
       expect(emptyBuffer).not.toBeNull()
       expect(emptyBuffer).not.toBeUndefined()
@@ -586,12 +584,10 @@ describe('ErrorHandler', () => {
     })
 
     it('should throw ValidationError when JSON.parse throws', () => {
-      // Mock JSON.parse to throw an error
       const originalParse = JSON.parse
       JSON.parse = jest.fn().mockImplementation(() => {
         throw new Error('JSON parse error')
       })
-      
       try {
         expect(() => ErrorHandler.validateJSONParse('{"test": "value"}', 'Custom error')).toThrow(ValidationError)
         expect(() => ErrorHandler.validateJSONParse('{"test": "value"}', 'Custom error')).toThrow('Custom error')
@@ -635,12 +631,10 @@ describe('ErrorHandler', () => {
     })
 
     it('should throw ValidationError when Buffer.from throws', () => {
-      // Mock Buffer.from to throw an error
       const originalFrom = Buffer.from
       Buffer.from = jest.fn().mockImplementation(() => {
         throw new Error('Buffer error')
       })
-      
       try {
         expect(() => ErrorHandler.validateBase64Decode('test', 'Custom error')).toThrow(ValidationError)
         expect(() => ErrorHandler.validateBase64Decode('test', 'Custom error')).toThrow('Custom error')
@@ -746,7 +740,7 @@ describe('ErrorHandler', () => {
     })
 
     it('should accept exactly 12 characters (minimum valid base64 length)', () => {
-      const minToken = 'a'.repeat(12) // 12 % 4 = 0, valid base64 length
+      const minToken = 'a'.repeat(12)
       expect(() => {
         ErrorHandler.validateTokenIntegrity(minToken)
       }).not.toThrow()
@@ -1068,7 +1062,7 @@ describe('ErrorHandler', () => {
 
     it('should throw ValidationError when iat is too far in the past', () => {
       const data = createValidTokenData()
-      data.iat = Math.floor(Date.now() / 1000) - (366 * 24 * 60 * 60) // More than 1 year ago
+      data.iat = Math.floor(Date.now() / 1000) - (366 * 24 * 60 * 60)
       expect(() => {
         ErrorHandler.validateTokenDataIntegrity(data)
       }).toThrow(ValidationError)
@@ -1079,7 +1073,7 @@ describe('ErrorHandler', () => {
 
     it('should throw ValidationError when exp is too far in the future', () => {
       const data = createValidTokenData()
-      data.exp = Math.floor(Date.now() / 1000) + (366 * 24 * 60 * 60) // More than 1 year from now
+      data.exp = Math.floor(Date.now() / 1000) + (366 * 24 * 60 * 60)
       expect(() => {
         ErrorHandler.validateTokenDataIntegrity(data)
       }).toThrow(ValidationError)
@@ -1090,7 +1084,7 @@ describe('ErrorHandler', () => {
 
     it('should accept iat exactly at the boundary (1 year ago)', () => {
       const data = createValidTokenData()
-      data.iat = Math.floor(Date.now() / 1000) - (365 * 24 * 60 * 60) // Exactly 1 year ago
+      data.iat = Math.floor(Date.now() / 1000) - (365 * 24 * 60 * 60)
       expect(() => {
         ErrorHandler.validateTokenDataIntegrity(data)
       }).not.toThrow()
@@ -1098,7 +1092,7 @@ describe('ErrorHandler', () => {
 
     it('should accept exp exactly at the boundary (1 year from now)', () => {
       const data = createValidTokenData()
-      data.exp = Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60) // Exactly 1 year from now
+      data.exp = Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60)
       expect(() => {
         ErrorHandler.validateTokenDataIntegrity(data)
       }).not.toThrow()

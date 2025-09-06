@@ -6,21 +6,28 @@ We release patches for security vulnerabilities in the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.x.x - 2.x.x  | ✅          |
+| 1.5.1+  | ✅                 |
+| 1.0.0 - 1.5.0 | ✅          |
 | < 1.0   | ❌                 |
 
 ## Security Features
 
 ### Encryption Algorithms
-- **AES-256-GCM**: Industry-standard encryption with hardware acceleration
-- **ChaCha20-Poly1305**: High-performance encryption, 2x faster than AES
+- **AES-256-GCM**: Industry-standard encryption with hardware acceleration (32-byte keys)
+- **AES-128-GCM**: High-performance encryption with smaller key size (16-byte keys)
+- **ChaCha20-Poly1305**: High-performance encryption, 2x faster than AES (32-byte keys)
 - **Authentication Tags**: Prevent tampering and ensure data integrity
 - **Random IVs**: Unique initialization vectors for each encryption
 
 ### Security Validations
-- **Secret Key Length**: 8-255 characters minimum
+- **Secret Key Length**: 8-255 characters minimum (algorithm-specific key derivation)
 - **Secret Key Characters**: Only printable ASCII characters (32-126) allowed
+- **Algorithm-Specific Keys**: 
+  - AES-128-GCM: 16-byte derived keys
+  - AES-256-GCM: 32-byte derived keys
+  - ChaCha20-Poly1305: 32-byte derived keys
 - **Expiration Limits**: Maximum 1 year token lifetime
+- **Millisecond Precision**: Sub-second expiration support (minimum 1 second for JWT compliance)
 - **Cache Limits**: Maximum 10,000 tokens to prevent memory exhaustion
 - **Payload Size**: Maximum 8KB to prevent DoS attacks
 - **Version Validation**: Prevents downgrade attacks
@@ -37,6 +44,7 @@ We release patches for security vulnerabilities in the following versions:
 - **Token Structure Validation**: Comprehensive validation of all token components
 - **Timestamp Consistency**: Payload and token timestamps must match exactly
 - **Data Type Validation**: Strict validation of all input data types
+- **Dynamic Key Length**: Algorithm-specific key length validation prevents key confusion
 
 ---
 
@@ -73,10 +81,15 @@ Include the following information:
 
 ### For Developers
 - **Use Strong Secrets**: Generate cryptographically secure secret keys
+- **Choose Right Algorithm**: 
+  - AES-128-GCM: Balance of performance and security
+  - AES-256-GCM: Maximum security with hardware acceleration
+  - ChaCha20-Poly1305: High performance, 2x faster than AES
 - **Rotate Keys Regularly**: Change secret keys periodically
 - **Validate Inputs**: Always validate token data before use
 - **Monitor Expiration**: Implement proper token expiration handling
 - **Use HTTPS**: Always transmit tokens over secure connections
+- **Handle Millisecond Precision**: Properly handle sub-second expiration values
 
 ### For Production
 - **Environment Variables**: Store secrets in environment variables, not code
@@ -84,6 +97,7 @@ Include the following information:
 - **Logging**: Log security events without exposing sensitive data
 - **Monitoring**: Monitor for unusual token patterns
 - **Updates**: Keep the library updated to the latest version
+- **Algorithm Selection**: Choose algorithms based on security requirements and performance needs
 
 ---
 
@@ -98,14 +112,20 @@ This library has been tested against common attack vectors:
 - ✅ **Cache Poisoning**: Proper cache validation prevents poisoning
 - ✅ **Secret Key Attacks**: Strong encryption prevents weak key exploitation
 - ✅ **Expiration Manipulation**: Encrypted timestamps prevent manipulation
+- ✅ **Key Length Confusion**: Algorithm-specific key validation prevents confusion
+- ✅ **Millisecond Precision**: Sub-second expiration handling prevents timing attacks
+- ✅ **Input Validation**: Comprehensive input sanitization prevents injection
+- ✅ **Memory Exhaustion**: Cache limits prevent DoS attacks
+- ✅ **Algorithm Confusion**: Cross-algorithm attack prevention
+- ✅ **Token Replay**: Expiration validation prevents replay attacks
 
 ---
 
 ## Security Updates
 
 Security updates are released as:
-- **Patch versions** (1.3.1, 1.3.2, etc.) for critical security fixes
-- **Minor versions** (1.4.0, 1.5.0, etc.) for security improvements
+- **Patch versions** (1.5.1, 1.5.2, etc.) for critical security fixes
+- **Minor versions** (1.6.0, 1.7.0, etc.) for security improvements
 - **Major versions** (2.0.0, 3.0.0, etc.) for breaking security changes
 
 ---

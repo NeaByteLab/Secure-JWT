@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.2] - 2025-09-06
+
+### Fixed
+- **Expiration Calculation**: Improved millisecond precision handling for sub-second expiration values
+  - Changed from `Math.floor(this.#expireInMs / 1000)` to `(this.#expireInMs < 1000 ? 1 : Math.ceil(this.#expireInMs / 1000))`
+  - Ensures proper JWT compliance with minimum 1-second expiration while supporting millisecond precision
+  - Prevents timing attacks through proper sub-second value handling
+
+### Documentation
+- **Security Documentation**: Updated SECURITY.md
+  - Added algorithm-specific key length guidance (AES-128-GCM: 16-byte, AES-256-GCM: 32-byte, ChaCha20: 32-byte)
+  - Added millisecond precision documentation and security considerations
+  - Added attack vector coverage including key length confusion and algorithm confusion prevention
+  - Updated security recommendations for algorithm selection based on performance and security requirements
+  - Added developer guidelines with millisecond precision handling best practices
+
+### Testing
+- **Test Cleanup**: Removed unnecessary comments and improved test clarity
+  - Added test coverage for edge cases without changing functionality
+  - Cleaned up test files for better maintainability
+
+---
+
 ## [1.5.1] - 2025-09-06
 
 ### Changed

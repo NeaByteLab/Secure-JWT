@@ -175,7 +175,7 @@ describe('SecureJWT', () => {
     })
 
     it('should throw PayloadTooLargeError for large payload', () => {
-      const largeData = 'x'.repeat(9000) // This will exceed 8192 bytes when JSON stringified
+      const largeData = 'x'.repeat(9000)
       expect(() => jwt.sign(largeData)).toThrow(PayloadTooLargeError)
     })
   })
@@ -206,29 +206,22 @@ describe('SecureJWT', () => {
       })
       const data = { userId: 123 }
       const token = shortJwt.sign(data)
-      
-      // Wait for token to expire
       await new Promise(resolve => setTimeout(resolve, 10))
-      
       expect(shortJwt.verify(token)).toBe(false)
     })
 
     it('should return false for token with wrong version', () => {
       const data = { userId: 123 }
       const token = jwt.sign(data)
-      
-      // Create JWT with different version
       const differentJwt = new SecureJWT({
         expireIn: '1h',
         secret: 'test-secret-key-123',
         version: '2.0.0'
       })
-      
       expect(differentJwt.verify(token)).toBe(false)
     })
 
     it('should return false for version downgrade attack', () => {
-      // Create JWT with older version first
       const olderJwt = new SecureJWT({
         expireIn: '1h',
         secret: 'test-secret-key-123',
@@ -236,22 +229,17 @@ describe('SecureJWT', () => {
       })
       const data = { userId: 123 }
       const token = olderJwt.sign(data)
-      
-      // Try to verify with newer version JWT (this should detect downgrade attack)
       expect(jwt.verify(token)).toBe(false)
     })
 
     it('should return false for version upgrade not supported', () => {
       const data = { userId: 123 }
       const token = jwt.sign(data)
-      
-      // Create JWT with newer version (upgrade not supported)
       const newerJwt = new SecureJWT({
         expireIn: '1h',
         secret: 'test-secret-key-123',
         version: '2.0.0'
       })
-      
       expect(newerJwt.verify(token)).toBe(false)
     })
 
@@ -289,25 +277,18 @@ describe('SecureJWT', () => {
       })
       const data = { userId: 123 }
       const token = shortJwt.sign(data)
-      
-      // Wait for token to expire
       await new Promise(resolve => setTimeout(resolve, 10))
-      
-      // The token might fail at different validation stages, so we test for any validation error
       expect(() => shortJwt.verifyStrict(token)).toThrow()
     })
 
     it('should throw VersionMismatchError for token with wrong version', () => {
       const data = { userId: 123 }
       const token = jwt.sign(data)
-      
-      // Create JWT with different version
       const differentJwt = new SecureJWT({
         expireIn: '1h',
         secret: 'test-secret-key-123',
         version: '2.0.0'
       })
-      
       expect(() => differentJwt.verifyStrict(token)).toThrow(VersionMismatchError)
     })
 
@@ -364,7 +345,7 @@ describe('SecureJWT', () => {
         encrypted: 'data',
         iv: 'iv',
         tag: 'tag',
-        exp: 'not-a-number', // should be number
+        exp: 'not-a-number',
         iat: 1234567890,
         version: '1.0.0'
       }
@@ -377,7 +358,7 @@ describe('SecureJWT', () => {
       const token = jwt.sign(data)
       const decoded = Buffer.from(token, 'base64').toString('utf8')
       const tokenData = JSON.parse(decoded)
-      tokenData.exp = tokenData.exp + 1 // Modify expiration
+      tokenData.exp = tokenData.exp + 1
       const modifiedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
       expect(() => jwt.verifyStrict(modifiedToken)).toThrow()
     })
@@ -506,7 +487,7 @@ describe('SecureJWT', () => {
         encrypted: 'data',
         iv: 'iv',
         tag: 'tag',
-        exp: 'not-a-number', // should be number
+        exp: 'not-a-number',
         iat: 1234567890,
         version: '1.0.0'
       }
@@ -519,7 +500,7 @@ describe('SecureJWT', () => {
       const token = jwt.sign(data)
       const decoded = Buffer.from(token, 'base64').toString('utf8')
       const tokenData = JSON.parse(decoded)
-      tokenData.exp = tokenData.exp + 1 // Modify expiration
+      tokenData.exp = tokenData.exp + 1
       const modifiedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
       expect(() => jwt.decode(modifiedToken)).toThrow(DecryptionError)
     })
