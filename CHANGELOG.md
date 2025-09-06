@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.2] - 2025-09-06
+
+### Added
+- **Integration examples**: HTTP server and cryptographic utility examples
+- **HTTP server example**: Complete Node.js server with JWT authentication and RBAC
+- **Salt & hash examples**: Key rotation patterns and cryptographic utilities
+- **Documentation table**: Organized documentation section with examples
+
+### Enhanced
+- **README description**: More detailed and technical description
+- **Configuration tables**: Simplified algorithm and key derivation option descriptions
+- **Documentation structure**: Better organized with hyperlinked documentation table
+- **Examples documentation**: Detailed README files for each example category
+
+### Technical
+- **Zero-dependency examples**: All examples use only Node.js built-in modules
+- **Educational content**: Learning-focused examples with security best practices
+
+---
+
 ## [1.4.1] - 2025-09-06
 
 ### Added

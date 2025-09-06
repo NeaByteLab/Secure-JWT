@@ -6,7 +6,7 @@
 ![coverage](https://img.shields.io/badge/coverage-98.32%25-brightgreen)
 ![license](https://img.shields.io/npm/l/@neabyte/secure-jwt.svg)
 
-A secure JWT implementation with **AES-256-GCM** & **ChaCha20-Poly1305** algorithms for Node.js applications.
+A secure JWT library implementation with multiple encryption algorithms, zero dependencies, and built-in security for Node.js applications. Designed for high performance and reliability with TypeScript support.
 
 ## ✨ Features
 
@@ -105,15 +105,15 @@ const jwt = new SecureJWT({
 
 | Value | Description |
 |-------|-------------|
-| `aes-256-gcm` | Hardware accelerated, industry standard, perfect for general purpose and enterprise applications |
-| `chacha20-poly1305` | Software optimized, 2-3x faster than AES, ideal for high-throughput and mobile applications |
+| `aes-256-gcm` | Hardware accelerated, industry standard |
+| `chacha20-poly1305` | Software optimized, 2-3x faster than AES |
 
 ### 🔑 Key Derivation Options
 
 | Value | Description |
 |-------|-------------|
-| `basic` | Fast salt + secret concatenation, perfect for high-performance applications |
-| `pbkdf2` | Secure 50K iterations with SHA-256, ideal for enterprise and high-security applications |
+| `basic` | Fast salt + secret concatenation |
+| `pbkdf2` | Secure 50K iterations with SHA-256 |
 
 ### ⏰ Time Format
 
@@ -327,11 +327,15 @@ try {
 
 ---
 
-## 🏗️ Architecture
-For detailed architecture diagrams and technical implementation details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+## 📚 Documentation
 
-## ⚡ Performance  
-For detailed benchmark results and performance metrics, see [BENCHMARK.md](BENCHMARK.md).
+| Topic | Description |
+|-------|-------------|
+| 🏗️ [ARCHITECTURE](ARCHITECTURE.md) | Technical implementation details and diagrams |
+| ⚡ [BENCHMARK](BENCHMARK.md) | Benchmark results and performance metrics |
+| 📚 [EXAMPLES](examples/) | Integration examples and usage patterns |
+| | • [HTTP Server](examples/http-server/README.md) - Server middleware and RBAC examples |
+| | • [Salt & Hash](examples/salt-hash/README.md) - Key rotation pattern and crypto utilities |
 
 ---
 
