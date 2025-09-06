@@ -327,3 +327,31 @@ export default class SecureJWT {
     }
   }
 }
+
+/**
+ * Export interfaces for external use
+ * @see {@link @interfaces/index}
+ */
+export type {
+  EncryptionAlgo,
+  JWTOptions,
+  JWTPayload,
+  KeyDerivationAlgo,
+  TimeUnit
+} from '@interfaces/index'
+
+/**
+ * Export error classes for external use
+ * @see {@link @utils/index}
+ */
+export {
+  ValidationError,
+  EncryptionError,
+  DecryptionError,
+  PayloadTooLargeError,
+  TokenExpiredError,
+  VersionMismatchError,
+  TokenInvalidError,
+  TimeFormatError,
+  SecretKeyError
+} from '@utils/index'

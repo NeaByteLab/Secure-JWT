@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2025-09-06
+
+### Added
+- **Error class exports**: Export custom error classes for advanced error handling
+- **Interface type exports**: Export TypeScript interfaces for type safety and development
+- **Advanced error handling documentation**: Examples with import statements and instanceof checks
+
+### Changed
+- **Type safety**: Exported interfaces enable better TypeScript development experience
+
+---
+
 ## [1.4.0] - 2025-09-06
 
 ### Added

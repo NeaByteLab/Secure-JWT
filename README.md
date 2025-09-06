@@ -181,6 +181,8 @@ Extracts data from token, throws on error.
 
 ## ❌ Error Handling
 
+### Basic Error Handling
+
 ```javascript
 // Using verify() - returns boolean
 const isValid = jwt.verify(token)
@@ -202,6 +204,58 @@ try {
   console.log('Decoded data:', data)
 } catch (error) {
   console.log('Decode error:', error.message)
+}
+```
+
+### Advanced Error Handling
+
+```javascript
+import { 
+  SecureJWT, 
+  TokenExpiredError, 
+  ValidationError,
+  EncryptionError,
+  DecryptionError,
+  PayloadTooLargeError,
+  TokenInvalidError,
+  VersionMismatchError
+} from '@neabyte/secure-jwt'
+
+const jwt = new SecureJWT({
+  secret: 'your-secret-key',
+  expireIn: '1h'
+})
+
+// Specific error handling
+try {
+  jwt.verifyStrict(token)
+  console.log('Token is valid')
+} catch (error) {
+  if (error instanceof TokenExpiredError) {
+    console.log('Token expired:', error.message)
+    // Handle expired token - redirect to login
+  } else if (error instanceof ValidationError) {
+    console.log('Invalid token format:', error.message)
+    // Handle invalid format - show error message
+  } else if (error instanceof VersionMismatchError) {
+    console.log('Token version mismatch:', error.message)
+    // Handle version mismatch - force re-login
+  } else if (error instanceof PayloadTooLargeError) {
+    console.log('Payload too large:', error.message)
+    // Handle oversized payload - reduce data size
+  } else {
+    console.log('Unknown error:', error.message)
+  }
+}
+
+// Error properties
+try {
+  jwt.verifyStrict(token)
+} catch (error) {
+  console.log('Error type:', error.constructor.name)
+  console.log('Error code:', error.code)               // e.g., 'TOKEN_EXPIRED'
+  console.log('Status code:', error.statusCode)        // e.g., 401
+  console.log('Error message:', error.message)         // Human-readable message
 }
 ```
 
