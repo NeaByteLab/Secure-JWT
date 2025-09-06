@@ -120,14 +120,15 @@ const jwt = new SecureJWT({
 ### ⏰ Time Format
 
 ```javascript
-// Supported formats
-'1ms'   // 1 millisecond
-'1s'    // 1 second  
-'1m'    // 1 minute
-'1h'    // 1 hour
-'1d'    // 1 day
-'1M'    // 1 month (30 days)
-'1y'    // 1 year (365 days)
+// Supported formats (1K ms / 1s minimum)
+'1ms'    // 1 second (JWT minimum)
+'500ms'  // 1 second (JWT minimum)
+'1s'     // 1 second  
+'1m'     // 1 minute
+'1h'     // 1 hour
+'1d'     // 1 day
+'1M'     // 1 month (30 days)
+'1y'     // 1 year (365 days)
 ```
 
 ---
