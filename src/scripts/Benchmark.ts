@@ -42,7 +42,7 @@ const testOperationNames = {
 
 /**
  * Creates random user data for testing purposes
- * @returns Object containing user profile data
+ * @returns {Record<string, unknown>} Object containing user profile data
  */
 const generateUserData = (): Record<string, unknown> => ({
   userId: Math.floor(Math.random() * randomMultipliers.userId),
@@ -139,7 +139,6 @@ for (const cacheSize of cacheSizes) {
   })
   const tokens: string[] = testPayloads.map(payload => jwt.sign(payload))
 
-  // Test 1: Sign Operation
   /**
    * Benchmark JWT signing operation with random payloads
    */
@@ -151,7 +150,6 @@ for (const cacheSize of cacheSizes) {
     }
   })
 
-  // Test 2: Verify Operation (with cache hits)
   /**
    * Benchmark JWT verification with cached tokens for cache hit performance
    */
@@ -163,7 +161,6 @@ for (const cacheSize of cacheSizes) {
     }
   })
 
-  // Test 3: Verify Operation (fresh tokens)
   /**
    * Benchmark JWT verification with fresh tokens for cache miss performance
    */
@@ -176,7 +173,6 @@ for (const cacheSize of cacheSizes) {
     }
   })
 
-  // Test 4: Decode Operation
   /**
    * Benchmark JWT decoding operation without verification
    */
@@ -188,7 +184,6 @@ for (const cacheSize of cacheSizes) {
     }
   })
 
-  // Test 5: Full Round Trip
   /**
    * Benchmark complete JWT workflow: sign, verify, and decode
    */
@@ -209,7 +204,6 @@ for (const cacheSize of cacheSizes) {
  * jsonwebtoken library performance comparison section
  * Tests the same operations using the standard jsonwebtoken library
  */
-// jsonwebtoken comparison
 console.log('\n🔍 jsonwebtoken Performance Test')
 console.log('='.repeat(40))
 const secret = 'super-secret-key-for-benchmarking-12345'
@@ -217,7 +211,6 @@ const jsonwebtokenTokens: string[] = testPayloads.map(payload =>
   jwt.sign(payload, secret, { expiresIn: '1h' })
 )
 
-// Test 1: Sign Operation
 /**
  * Benchmark jsonwebtoken signing operation
  */
@@ -229,7 +222,6 @@ benchmark('jsonwebtoken Sign', () => {
   }
 })
 
-// Test 2: Verify Operation
 /**
  * Benchmark jsonwebtoken verification operation
  */
@@ -241,7 +233,6 @@ benchmark('jsonwebtoken Verify', () => {
   }
 })
 
-// Test 3: Decode Operation
 /**
  * Benchmark jsonwebtoken decoding operation
  */
