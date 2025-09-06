@@ -122,8 +122,8 @@ export class ErrorHandler {
     if (secret.length > 255) {
       throw new SecretKeyError(getErrorMessage('SECRET_TOO_LONG'))
     }
-    for (let i = 0; i < secret.length; i++) {
-      const charCode = secret.charCodeAt(i)
+    for (let i: number = 0; i < secret.length; i++) {
+      const charCode: number = secret.charCodeAt(i)
       if (charCode < 32 || charCode === 127) {
         throw new SecretKeyError(getErrorMessage('SECRET_INVALID_CHARS'))
       }
@@ -179,7 +179,7 @@ export class ErrorHandler {
     if (keyDerivation.length === 0) {
       throw new ValidationError(getErrorMessage('KEY_DERIVATION_CANNOT_BE_EMPTY'))
     }
-    const validMethods = ['basic', 'pbkdf2'] as const
+    const validMethods: KeyDerivationAlgo[] = ['basic', 'pbkdf2']
     if (!validMethods.includes(keyDerivation)) {
       throw new ValidationError(getErrorMessage('KEY_DERIVATION_INVALID_METHOD'))
     }
@@ -197,7 +197,7 @@ export class ErrorHandler {
     if (algorithm.length === 0) {
       throw new ValidationError(getErrorMessage('ALGORITHM_CANNOT_BE_EMPTY'))
     }
-    const validAlgorithms = ['aes-128-gcm', 'aes-256-gcm', 'chacha20-poly1305'] as const
+    const validAlgorithms: EncryptionAlgo[] = ['aes-128-gcm', 'aes-256-gcm', 'chacha20-poly1305']
     if (!validAlgorithms.includes(algorithm as EncryptionAlgo)) {
       throw new ValidationError(getErrorMessage('INVALID_ALGORITHM'))
     }
@@ -210,7 +210,7 @@ export class ErrorHandler {
    * @throws {PayloadTooLargeError} When payload exceeds maximum size
    */
   static validatePayloadSize(payload: string, maxSize: number = 8192): void {
-    const byteLength = Buffer.byteLength(payload, 'utf8')
+    const byteLength: number = Buffer.byteLength(payload, 'utf8')
     if (byteLength > maxSize) {
       throw new PayloadTooLargeError(getErrorMessage('PAYLOAD_TOO_LARGE'))
     }
@@ -234,7 +234,7 @@ export class ErrorHandler {
    * @throws {TokenExpiredError} When token has expired
    */
   static checkTokenExpiration(exp: number): void {
-    const now = Math.floor(Date.now() / 1000)
+    const now: number = Math.floor(Date.now() / 1000)
     if (exp <= now) {
       throw new TokenExpiredError(getErrorMessage('TOKEN_EXPIRED'))
     }
@@ -265,11 +265,11 @@ export class ErrorHandler {
    * @returns -1 if version1 < version2, 0 if equal, 1 if version1 > version2
    */
   private static compareVersions(version1: string, version2: string): number {
-    const v1Parts = version1.split('.').map(Number)
-    const v2Parts = version2.split('.').map(Number)
-    for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
-      const v1Part = v1Parts[i] ?? 0
-      const v2Part = v2Parts[i] ?? 0
+    const v1Parts: number[] = version1.split('.').map(Number)
+    const v2Parts: number[] = version2.split('.').map(Number)
+    for (let i: number = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
+      const v1Part: number = v1Parts[i] ?? 0
+      const v2Part: number = v2Parts[i] ?? 0
       if (v1Part < v2Part) {
         return -1
       }
@@ -420,7 +420,7 @@ export class ErrorHandler {
     if (token.length > 100000) {
       throw new ValidationError(getErrorMessage('TOKEN_FORMAT_TOO_LONG'))
     }
-    const paddingCount = (token.match(/=/g) ?? []).length
+    const paddingCount: number = (token.match(/=/g) ?? []).length
     if (paddingCount > 2) {
       throw new ValidationError(getErrorMessage('TOKEN_FORMAT_INVALID_PADDING'))
     }
@@ -438,8 +438,8 @@ export class ErrorHandler {
     if (tokenData === null || tokenData === undefined || typeof tokenData !== 'object') {
       throw new ValidationError(getErrorMessage('TOKEN_STRUCTURE_NOT_OBJECT'))
     }
-    const data = tokenData as Record<string, unknown>
-    const requiredFields = ['encrypted', 'iv', 'tag', 'exp', 'iat', 'version']
+    const data: Record<string, unknown> = tokenData as Record<string, unknown>
+    const requiredFields: string[] = ['encrypted', 'iv', 'tag', 'exp', 'iat', 'version']
     for (const field of requiredFields) {
       if (!(field in data)) {
         throw new ValidationError(`${getErrorMessage('TOKEN_STRUCTURE_MISSING_FIELD')} '${field}'`)
@@ -466,9 +466,9 @@ export class ErrorHandler {
     if (data['iat'] > data['exp']) {
       throw new ValidationError(getErrorMessage('TOKEN_STRUCTURE_IAT_GREATER_THAN_EXP'))
     }
-    const now = Math.floor(Date.now() / 1000)
-    const maxPast = 365 * 24 * 60 * 60
-    const maxFuture = 365 * 24 * 60 * 60
+    const now: number = Math.floor(Date.now() / 1000)
+    const maxPast: number = 365 * 24 * 60 * 60
+    const maxFuture: number = 365 * 24 * 60 * 60
     if (data['iat'] < now - maxPast) {
       throw new ValidationError(getErrorMessage('TOKEN_STRUCTURE_IAT_TOO_FAR_PAST'))
     }

@@ -1,7 +1,7 @@
 /**
  * Error codes for identifying different error types
  */
-export const errorCodes = {
+export const errorCodes: Record<string, string> = {
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   ENCRYPTION_ERROR: 'ENCRYPTION_ERROR',
   DECRYPTION_ERROR: 'DECRYPTION_ERROR',
@@ -16,7 +16,7 @@ export const errorCodes = {
 /**
  * Error messages for reporting errors
  */
-export const errorMessages = {
+export const errorMessages: Record<string, string> = {
   // Data validation errors
   DATA_NULL_UNDEFINED: 'Data cannot be null or undefined',
   DATA_EMPTY_STRING: 'Data cannot be an empty string',

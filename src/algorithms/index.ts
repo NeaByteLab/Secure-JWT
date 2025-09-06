@@ -25,7 +25,7 @@ export default class Algorithms {
    * @returns Buffer containing derived key
    */
   static getDerivedKeyBasic(secret: string): Buffer {
-    const salt = this.getRandomBytes(32)
+    const salt: Buffer = this.getRandomBytes(32)
     return Buffer.concat([salt, Buffer.from(secret, 'utf8')])
   }
 
@@ -36,7 +36,7 @@ export default class Algorithms {
    * @returns Buffer containing derived key
    */
   static getDerivedKeyPBKDF2(secret: string, iterations: number = 50000): Buffer {
-    const salt = this.getRandomBytes(32)
+    const salt: Buffer = this.getRandomBytes(32)
     return pbkdf2Sync(secret, salt, iterations, 32, 'sha256')
   }
 

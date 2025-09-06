@@ -1,5 +1,5 @@
 import type { TimeUnit } from '@interfaces/index'
-import { ErrorHandler, TimeFormatError, errorMessages } from '@utils/index'
+import { ErrorHandler, TimeFormatError, getErrorMessage } from '@utils/index'
 
 /**
  * Converts time unit to milliseconds
@@ -8,7 +8,7 @@ import { ErrorHandler, TimeFormatError, errorMessages } from '@utils/index'
  * @throws {TimeFormatError} When unit is not supported
  */
 export function timeToMs(timeUnit: TimeUnit): number {
-  const { value, unit } = timeUnit
+  const { value, unit }: TimeUnit = timeUnit
   switch (unit) {
     case 'ms':
       return value
@@ -25,7 +25,9 @@ export function timeToMs(timeUnit: TimeUnit): number {
     case 'y':
       return value * 365 * 24 * 60 * 60 * 1000
     default:
-      throw new TimeFormatError(errorMessages.TIME_UNIT_UNSUPPORTED.replace('{unit}', String(unit)))
+      throw new TimeFormatError(
+        getErrorMessage('TIME_UNIT_UNSUPPORTED').replace('{unit}', String(unit))
+      )
   }
 }
 
@@ -36,15 +38,15 @@ export function timeToMs(timeUnit: TimeUnit): number {
  * @throws {TimeFormatError} When time string format is invalid or value is negative
  */
 export function parseTimeString(timeString: string): TimeUnit {
-  const timeRegex = /^(\d+)(ms|s|m|h|d|M|y)$/
-  const match = timeRegex.exec(timeString)
+  const timeRegex: RegExp = /^(\d+)(ms|s|m|h|d|M|y)$/
+  const match: RegExpExecArray | null = timeRegex.exec(timeString)
   if (!match || match.length < 3 || match[1] === undefined || match[2] === undefined) {
-    throw new TimeFormatError(errorMessages.TIME_FORMAT_INVALID)
+    throw new TimeFormatError(getErrorMessage('TIME_FORMAT_INVALID'))
   }
-  const value = parseInt(match[1], 10)
-  const unit = match[2] as TimeUnit['unit']
+  const value: number = parseInt(match[1], 10)
+  const unit: TimeUnit['unit'] = match[2] as TimeUnit['unit']
   if (value <= 0) {
-    throw new TimeFormatError(errorMessages.TIME_VALUE_NEGATIVE)
+    throw new TimeFormatError(getErrorMessage('TIME_VALUE_NEGATIVE'))
   }
   return { value, unit }
 }
@@ -57,11 +59,11 @@ export function parseTimeString(timeString: string): TimeUnit {
  */
 export function parsetimeToMs(timeString: string): number {
   ErrorHandler.validateTimeString(timeString)
-  const timeUnit = parseTimeString(timeString.trim())
-  const milliseconds = timeToMs(timeUnit)
-  const maxExpirationMs = 365 * 24 * 60 * 60 * 1000
+  const timeUnit: TimeUnit = parseTimeString(timeString.trim())
+  const milliseconds: number = timeToMs(timeUnit)
+  const maxExpirationMs: number = 365 * 24 * 60 * 60 * 1000
   if (milliseconds > maxExpirationMs) {
-    throw new TimeFormatError(errorMessages.TIME_VALUE_TOO_LARGE)
+    throw new TimeFormatError(getErrorMessage('TIME_VALUE_TOO_LARGE'))
   }
   return milliseconds
 }

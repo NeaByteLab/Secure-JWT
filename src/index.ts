@@ -92,10 +92,10 @@ export default class SecureJWT {
    */
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
-    const keyLength = this.#algorithm.getKeyLength()
-    const key = this.#secret.subarray(0, keyLength)
+    const keyLength: number = this.#algorithm.getKeyLength()
+    const key: Buffer = this.#secret.subarray(0, keyLength)
     ErrorHandler.validateKeyLength(key)
-    const iv = Algorithms.getRandomBytes(this.#algorithm.getIVLength())
+    const iv: Buffer = Algorithms.getRandomBytes(this.#algorithm.getIVLength())
     return this.#algorithm.encrypt(data, key, iv, this.#version)
   }
 
@@ -107,8 +107,8 @@ export default class SecureJWT {
   private decrypt(tokenEncrypted: TokenEncrypted): string {
     try {
       ErrorHandler.validateTokenEncrypted(tokenEncrypted)
-      const keyLength = this.#algorithm.getKeyLength()
-      const key = this.#secret.subarray(0, keyLength)
+      const keyLength: number = this.#algorithm.getKeyLength()
+      const key: Buffer = this.#secret.subarray(0, keyLength)
       ErrorHandler.validateKeyLength(key)
       ErrorHandler.validateIVFormat(tokenEncrypted.iv)
       ErrorHandler.validateTagFormat(tokenEncrypted.tag)
@@ -131,8 +131,8 @@ export default class SecureJWT {
   sign(data: unknown): string {
     try {
       ErrorHandler.validateData(data)
-      const now = Math.floor(Date.now() / 1000)
-      const exp = now + (this.#expireInMs < 1000 ? 1 : Math.ceil(this.#expireInMs / 1000))
+      const now: number = Math.floor(Date.now() / 1000)
+      const exp: number = now + (this.#expireInMs < 1000 ? 1 : Math.ceil(this.#expireInMs / 1000))
       ErrorHandler.validateExpiration(exp, now + 365 * 24 * 60 * 60)
       const payload: PayloadData = {
         data,
@@ -140,9 +140,9 @@ export default class SecureJWT {
         iat: now,
         version: this.#version
       }
-      const payloadString = JSON.stringify(payload)
+      const payloadString: string = JSON.stringify(payload)
       ErrorHandler.validatePayloadSize(payloadString)
-      const tokenEncrypted = this.encrypt(payloadString)
+      const tokenEncrypted: TokenEncrypted = this.encrypt(payloadString)
       const tokenData: TokenData = {
         encrypted: tokenEncrypted.encrypted,
         iv: tokenEncrypted.iv,
@@ -151,7 +151,7 @@ export default class SecureJWT {
         iat: now,
         version: this.#version
       }
-      const tokenString = JSON.stringify(tokenData)
+      const tokenString: string = JSON.stringify(tokenData)
       return Buffer.from(tokenString).toString('base64')
     } catch (error) {
       if (
@@ -174,19 +174,19 @@ export default class SecureJWT {
    */
   verify(token: string): boolean {
     try {
-      const cachedResult = this.#verifyCache.get(token)
+      const cachedResult: boolean | undefined = this.#verifyCache.get(token)
       if (cachedResult !== undefined) {
         return cachedResult
       }
-      const tokenData = this.validateAndParseToken(token)
+      const tokenData: TokenData = this.validateAndParseToken(token)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
         iv: tokenData.iv,
         tag: tokenData.tag
       }
-      const decryptedPayload = this.decrypt(tokenEncrypted)
-      const payload = ErrorHandler.validateJSONParse<PayloadData>(
-        decryptedPayload,
+      const payloadDecrypted: string = this.decrypt(tokenEncrypted)
+      const payload: PayloadData = ErrorHandler.validateJSONParse<PayloadData>(
+        payloadDecrypted,
         getErrorMessage('INVALID_PAYLOAD_STRUCTURE')
       )
       if (!isValidPayloadData(payload)) {
@@ -213,15 +213,15 @@ export default class SecureJWT {
    * @throws {VersionMismatchError} When token version is incompatible
    */
   verifyStrict(token: string): void {
-    const tokenData = this.validateAndParseToken(token)
+    const tokenData: TokenData = this.validateAndParseToken(token)
     const tokenEncrypted: TokenEncrypted = {
       encrypted: tokenData.encrypted,
       iv: tokenData.iv,
       tag: tokenData.tag
     }
-    const decryptedPayload = this.decrypt(tokenEncrypted)
-    const payload = ErrorHandler.validateJSONParse<PayloadData>(
-      decryptedPayload,
+    const payloadDecrypted: string = this.decrypt(tokenEncrypted)
+    const payload: PayloadData = ErrorHandler.validateJSONParse<PayloadData>(
+      payloadDecrypted,
       getErrorMessage('INVALID_PAYLOAD_STRUCTURE')
     )
     if (!isValidPayloadData(payload)) {
@@ -243,19 +243,19 @@ export default class SecureJWT {
    */
   decode(token: string): unknown {
     try {
-      const cachedResult = this.#payloadCache.get(token)
+      const cachedResult: unknown = this.#payloadCache.get(token)
       if (cachedResult !== undefined) {
         return cachedResult
       }
-      const tokenData = this.validateAndParseToken(token)
+      const tokenData: TokenData = this.validateAndParseToken(token)
       const tokenEncrypted: TokenEncrypted = {
         encrypted: tokenData.encrypted,
         iv: tokenData.iv,
         tag: tokenData.tag
       }
-      const decryptedPayload = this.decrypt(tokenEncrypted)
-      const payload = ErrorHandler.validateJSONParse<PayloadData>(
-        decryptedPayload,
+      const payloadDecrypted: string = this.decrypt(tokenEncrypted)
+      const payload: PayloadData = ErrorHandler.validateJSONParse<PayloadData>(
+        payloadDecrypted,
         getErrorMessage('INVALID_PAYLOAD_STRUCTURE')
       )
       if (!isValidPayloadData(payload)) {
@@ -293,11 +293,11 @@ export default class SecureJWT {
   private validateAndParseToken(token: string): TokenData {
     ErrorHandler.validateToken(token)
     ErrorHandler.validateTokenIntegrity(token)
-    const decoded = ErrorHandler.validateBase64Decode(
+    const decoded: string = ErrorHandler.validateBase64Decode(
       token,
       getErrorMessage('INVALID_TOKEN_FORMAT')
     )
-    const tokenData = ErrorHandler.validateJSONParse<TokenData>(
+    const tokenData: TokenData = ErrorHandler.validateJSONParse<TokenData>(
       decoded,
       getErrorMessage('INVALID_TOKEN_STRUCTURE')
     )

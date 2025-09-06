@@ -142,6 +142,21 @@ export default [
       '@typescript-eslint/restrict-template-expressions': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'error',
 
+      // Explicit type definitions
+      '@typescript-eslint/typedef': [
+        'error',
+        {
+          'arrowParameter': true,
+          'variableDeclaration': true,
+          'variableDeclarationIgnoreFunction': false,
+          'memberVariableDeclaration': true,
+          'objectDestructuring': true,
+          'parameter': true,
+          'propertyDeclaration': true,
+          'arrayDestructuring': true
+        }
+      ],
+
       // Naming conventions
       '@typescript-eslint/naming-convention': [
         'error',

@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv } from 'node:crypto'
+import { createCipheriv, createDecipheriv, type CipherGCM, type DecipherGCM } from 'node:crypto'
 import { ErrorHandler } from '@utils/index'
 import type { TokenEncrypted, EncryptionAlgo, IEncryptionAlgo } from '@interfaces/index'
 
@@ -8,7 +8,7 @@ import type { TokenEncrypted, EncryptionAlgo, IEncryptionAlgo } from '@interface
  */
 export default class AES256GCM implements IEncryptionAlgo {
   /** Algorithm name constant */
-  private readonly algorithm = 'aes-256-gcm'
+  private readonly algorithm: string = 'aes-256-gcm'
 
   /**
    * Encrypts data using AES-256-GCM
@@ -19,11 +19,11 @@ export default class AES256GCM implements IEncryptionAlgo {
    * @returns Object containing encrypted data, IV, and authentication tag
    */
   encrypt(data: string, key: Buffer, iv: Buffer, version: string): TokenEncrypted {
-    const cipher = createCipheriv(this.algorithm, key, iv)
+    const cipher: CipherGCM = createCipheriv(this.algorithm, key, iv) as CipherGCM
     cipher.setAAD(Buffer.from(`secure-jwt-${version}`, 'utf8'))
-    let encrypted = cipher.update(data, 'utf8', 'hex')
+    let encrypted: string = cipher.update(data, 'utf8', 'hex')
     encrypted += cipher.final('hex')
-    const tag = cipher.getAuthTag()
+    const tag: Buffer = cipher.getAuthTag()
     ErrorHandler.validateAuthTag(tag)
     return {
       encrypted,
@@ -40,10 +40,14 @@ export default class AES256GCM implements IEncryptionAlgo {
    * @returns Decrypted string data
    */
   decrypt(tokenEncrypted: TokenEncrypted, key: Buffer, version: string): string {
-    const decipher = createDecipheriv(this.algorithm, key, Buffer.from(tokenEncrypted.iv, 'hex'))
+    const decipher: DecipherGCM = createDecipheriv(
+      this.algorithm,
+      key,
+      Buffer.from(tokenEncrypted.iv, 'hex')
+    ) as DecipherGCM
     decipher.setAAD(Buffer.from(`secure-jwt-${version}`, 'utf8'))
     decipher.setAuthTag(Buffer.from(tokenEncrypted.tag, 'hex'))
-    let decrypted = decipher.update(tokenEncrypted.encrypted, 'hex', 'utf8')
+    let decrypted: string = decipher.update(tokenEncrypted.encrypted, 'hex', 'utf8')
     decrypted += decipher.final('utf8')
     return decrypted
   }
@@ -69,6 +73,6 @@ export default class AES256GCM implements IEncryptionAlgo {
    * @returns Algorithm name string
    */
   getAlgoName(): EncryptionAlgo {
-    return this.algorithm
+    return this.algorithm as EncryptionAlgo
   }
 }

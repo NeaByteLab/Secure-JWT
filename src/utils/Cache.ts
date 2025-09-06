@@ -4,7 +4,7 @@ import type { CacheEntry } from '@interfaces/index'
  * In-memory cache that stores data with expiration time
  */
 export class Cache<T> {
-  private readonly cache = new Map<string, CacheEntry<T>>()
+  private readonly cache: Map<string, CacheEntry<T>> = new Map<string, CacheEntry<T>>()
   private readonly maxSize: number
   private readonly defaultTTL: number
 
@@ -24,7 +24,7 @@ export class Cache<T> {
    * @returns Cached value or undefined if not found or expired
    */
   get(key: string): T | undefined {
-    const entry = this.cache.get(key)
+    const entry: CacheEntry<T> | undefined = this.cache.get(key)
     if (!entry) {
       return undefined
     }
@@ -43,10 +43,10 @@ export class Cache<T> {
    * @param ttl - Expiration time in milliseconds (optional, uses default if not provided, minimum: 1ms)
    */
   set(key: string, value: T, ttl?: number): void {
-    const now = Date.now()
-    const requestedTTL = ttl ?? this.defaultTTL
-    const finalTTL = Math.max(1, requestedTTL)
-    const expiresAt = now + finalTTL
+    const now: number = Date.now()
+    const requestedTTL: number = ttl ?? this.defaultTTL
+    const finalTTL: number = Math.max(1, requestedTTL)
+    const expiresAt: number = now + finalTTL
     const entry: CacheEntry<T> = {
       data: value,
       expiresAt,
@@ -65,7 +65,7 @@ export class Cache<T> {
    * @returns True if the key exists and is valid
    */
   has(key: string): boolean {
-    const entry = this.cache.get(key)
+    const entry: CacheEntry<T> | undefined = this.cache.get(key)
     if (!entry) {
       return false
     }
@@ -82,11 +82,11 @@ export class Cache<T> {
    * Uses access count and creation time to decide which item to remove
    */
   private evictLRU(): void {
-    let lruKey = ''
-    let lruScore = Number.MAX_SAFE_INTEGER
+    let lruKey: string = ''
+    let lruScore: number = Number.MAX_SAFE_INTEGER
     for (const [key, entry] of this.cache.entries()) {
-      const age = Date.now() - entry.createdAt
-      const score = entry.accessCount + age / 1000
+      const age: number = Date.now() - entry.createdAt
+      const score: number = entry.accessCount + age / 1000
       if (score < lruScore) {
         lruScore = score
         lruKey = key
