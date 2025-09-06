@@ -8,14 +8,15 @@ This directory contains HTTP server examples demonstrating how to use Secure-JWT
 
 A modern Express.js server with JWT middleware - perfect for quick prototyping and learning!
 
-**Features:**
-- **Express.js framework** - Modern, fast web framework
-- **JWT middleware** - Reusable authentication middleware
-- **Protected/unprotected routes** - Clear separation of access levels
-- **Login endpoint** - Generate JWT tokens
-- **Health check** - Server status monitoring
-- **TypeScript support** - Full type safety
-- **Error handling** - Comprehensive error responses
+**Endpoints:**
+- `GET /public` - Public route (no authentication)
+- `GET /protected` - Protected route (requires JWT)
+- `POST /login` - Login to get JWT token
+- `GET /health` - Health check
+
+### ⚡ Fastify Server (`fastify-server.ts`)
+
+A high-performance Fastify server with JWT authentication - built for speed and efficiency!
 
 **Endpoints:**
 - `GET /public` - Public route (no authentication)
@@ -26,16 +27,6 @@ A modern Express.js server with JWT middleware - perfect for quick prototyping a
 ### 🔧 Simple Server (`simple-server.ts`)
 
 A complete HTTP server implementation using only Node.js built-in modules - zero dependencies!
-
-**Features:**
-- **Zero dependencies** - Pure Node.js implementation
-- **Login endpoint** - Authenticate users and issue JWT tokens
-- **Protected endpoints** - Verify JWT tokens for access control
-- **Role-based access** - Admin-only endpoints
-- **Token verification** - Validate existing tokens
-- **Health check** - Server status and JWT configuration
-- **CORS support** - Cross-origin requests
-- **Error handling** - Comprehensive error responses
 
 **Endpoints:**
 - `POST /login` - Login with username/password
@@ -53,6 +44,27 @@ A complete HTTP server implementation using only Node.js built-in modules - zero
 1. **Start the Express server:**
    ```bash
    npx tsx examples/http-server/express-server.ts
+   ```
+
+2. **Test the endpoints:**
+   ```bash
+   # Test public route
+   curl http://localhost:3000/public
+
+   # Login to get token
+   curl -X POST http://localhost:3000/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"admin","password":"password"}'
+
+   # Use the token from login response
+   curl -H "Authorization: Bearer <your-token>" \
+     http://localhost:3000/protected
+   ```
+
+### Fastify Server
+1. **Start the Fastify server:**
+   ```bash
+   npx tsx examples/http-server/fastify-server.ts
    ```
 
 2. **Test the endpoints:**
@@ -88,9 +100,16 @@ A complete HTTP server implementation using only Node.js built-in modules - zero
      http://localhost:3000/protected
    ```
 
+---
+
 ## 👥 Test Users
 
 ### Express Server
+| Username | Password | Role  |
+|----------|----------|-------|
+| admin    | password | admin |
+
+### Fastify Server
 | Username | Password | Role  |
 |----------|----------|-------|
 | admin    | password | admin |
@@ -118,6 +137,8 @@ A complete HTTP server implementation using only Node.js built-in modules - zero
 - **Use HTTPS** - Encrypt all communications
 - **Add logging** - Monitor authentication events
 - **Database integration** - Replace mock user database
+
+---
 
 ## 📝 Example Responses
 
@@ -160,6 +181,8 @@ A complete HTTP server implementation using only Node.js built-in modules - zero
 }
 ```
 
+---
+
 ## 💡 Why These Examples?
 
 ### Express Server
@@ -169,6 +192,14 @@ Perfect for:
 - **Modern web apps** - TypeScript + Express.js stack
 - **Middleware patterns** - Reusable authentication middleware
 
+### Fastify Server
+Perfect for:
+- **High performance** - Fast and efficient web framework
+- **Production apps** - Built for speed and scalability
+- **TypeScript projects** - Full type safety with interfaces
+- **Schema validation** - Built-in request validation
+- **Logging** - Comprehensive request/response logging
+
 ### Simple Server
 Perfect for:
 - **Zero dependencies** - Pure Node.js implementation
@@ -177,7 +208,7 @@ Perfect for:
 - **Full-featured auth** - Token verification, CORS, health checks
 - **Learning internals** - Understand HTTP server mechanics
 
-Both examples demonstrate:
+All examples demonstrate:
 - **Real-world usage** - How JWT authentication works in practice
 - **Security best practices** - Proper token handling and validation
 - **Production patterns** - Error handling, CORS, health checks
