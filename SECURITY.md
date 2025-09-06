@@ -19,16 +19,26 @@ We release patches for security vulnerabilities in the following versions:
 
 ### Security Validations
 - **Secret Key Length**: 8-255 characters minimum
+- **Secret Key Characters**: Only printable ASCII characters (32-126) allowed
 - **Expiration Limits**: Maximum 1 year token lifetime
 - **Cache Limits**: Maximum 10,000 tokens to prevent memory exhaustion
 - **Payload Size**: Maximum 8KB to prevent DoS attacks
 - **Version Validation**: Prevents downgrade attacks
+- **Key Derivation**: PBKDF2 with 50K iterations for secure key generation
+- **Token Format**: Strict base64 validation with length and padding checks
+- **IV Format**: Hexadecimal validation for initialization vectors
+- **Auth Tag Format**: 32-character hex validation for authentication tags
 
 ### Tamper Protection
 - **Authentication Tags**: Cryptographic verification of data integrity
 - **Version-based AAD**: Additional authenticated data prevents version manipulation
 - **Timestamp Validation**: Encrypted timestamps prevent expiration manipulation
 - **Algorithm Detection**: Automatic algorithm detection prevents cross-algorithm attacks
+- **Token Structure Validation**: Comprehensive validation of all token components
+- **Timestamp Consistency**: Payload and token timestamps must match exactly
+- **Data Type Validation**: Strict validation of all input data types
+
+---
 
 ## Reporting a Vulnerability
 
@@ -57,6 +67,8 @@ Include the following information:
 - We will credit you in our security advisories (unless you prefer to remain anonymous)
 - We will coordinate the public disclosure timeline with you
 
+---
+
 ## Security Best Practices
 
 ### For Developers
@@ -73,6 +85,8 @@ Include the following information:
 - **Monitoring**: Monitor for unusual token patterns
 - **Updates**: Keep the library updated to the latest version
 
+---
+
 ## Security Audit
 
 This library has been tested against common attack vectors:
@@ -85,6 +99,8 @@ This library has been tested against common attack vectors:
 - ✅ **Secret Key Attacks**: Strong encryption prevents weak key exploitation
 - ✅ **Expiration Manipulation**: Encrypted timestamps prevent manipulation
 
+---
+
 ## Security Updates
 
 Security updates are released as:
@@ -92,14 +108,11 @@ Security updates are released as:
 - **Minor versions** (1.4.0, 1.5.0, etc.) for security improvements
 - **Major versions** (2.0.0, 3.0.0, etc.) for breaking security changes
 
+---
+
 ## Contact
 
 For security-related questions or concerns:
 - **Email**: me@neabyte.com
 - **Response Time**: Within 7 days
 - **Encryption**: PGP key available upon request
-
----
-
-**Last Updated**: September 6, 2025
-**Version**: 1.4.3

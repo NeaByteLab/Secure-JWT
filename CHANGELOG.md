@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.4] - 2025-09-06
+
+### Changed
+- **Package optimization**: Removed CHANGELOG.md from npm bundle for leaner package size
+- **Documentation**: Enhanced SECURITY.md with comprehensive security features documentation
+- **Keywords**: Expanded npm keywords for better discoverability and searchability
+
+### Documentation
+- **SECURITY.md**: Added detailed security validations and tamper protection features
+- **SECURITY.md**: Added proper markdown separators for better readability
+- **SECURITY.md**: Removed version info to reduce maintenance overhead
+- **package.json**: Added 15+ relevant keywords for better npm search visibility
+
+---
+
 ## [1.4.3] - 2025-09-06
 
 ### Fixed
