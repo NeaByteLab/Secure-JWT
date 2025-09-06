@@ -1,7 +1,7 @@
 {
   "name": "@neabyte/secure-jwt",
-  "description": "Secure JWT with AES-256-GCM & ChaCha20-Poly1305 encryption, built-in caching, tamper detection, and TypeScript support",
-  "version": "1.4.4",
+  "description": "A secure JWT library with multiple encryption algorithms, zero dependencies, and built-in security for Node.js applications.",
+  "version": "1.4.5",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

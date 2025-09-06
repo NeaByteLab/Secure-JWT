@@ -87,6 +87,10 @@ export const errorMessages = {
   KEY_DERIVATION_INVALID_METHOD: 'Invalid key derivation method. Must be "basic" or "pbkdf2"',
   INVALID_KEY_DERIVATION_METHOD: 'Invalid key derivation method provided',
 
+  // Algorithm errors
+  ALGORITHM_MUST_BE_STRING: 'Algorithm must be a string',
+  ALGORITHM_CANNOT_BE_EMPTY: 'Algorithm cannot be empty',
+
   // Options errors
   OPTIONS_MUST_BE_OBJECT: 'Options must be an object',
   EXPIRE_IN_REQUIRED: 'expireIn is required and must be a string',

@@ -76,7 +76,7 @@ describe('ErrorMap', () => {
     })
 
     it('should have consistent structure', () => {
-      expect(Object.keys(errorMessages)).toHaveLength(72)
+      expect(Object.keys(errorMessages)).toHaveLength(74)
     })
 
     it('should have all messages as strings', () => {

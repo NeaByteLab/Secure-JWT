@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.5] - 2025-09-06
+
+### Fixed
+- Added validation for encryption algorithm parameter
+- Base64 string validation in token processing
+- Constructor validation order to prevent masked error messages
+- Test coverage increased from 98.32% to 98.37%
+- Whitespace handling in `expireIn` parameter (e.g., " 1h " now works)
+
+### Changed
+- Error message specificity and validation order
+- Parameter validation across all constructor options
+- Added tests for previously uncovered validation paths
+
+### Technical
+- All options now validated before processing to surface specific errors
+- Added `.trim()` to handle whitespace in time strings
+- Added `validateAlgorithm` method with proper error messages
+
+---
+
 ## [1.4.4] - 2025-09-06
 
 ### Changed

@@ -57,7 +57,7 @@ export function parseTimeString(timeString: string): TimeUnit {
  */
 export function parsetimeToMs(timeString: string): number {
   ErrorHandler.validateTimeString(timeString)
-  const timeUnit = parseTimeString(timeString)
+  const timeUnit = parseTimeString(timeString.trim())
   const milliseconds = timeToMs(timeUnit)
   const maxExpirationMs = 365 * 24 * 60 * 60 * 1000
   if (milliseconds > maxExpirationMs) {

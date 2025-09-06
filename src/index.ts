@@ -49,6 +49,9 @@ export default class SecureJWT {
     ErrorHandler.validateOptions(options)
     ErrorHandler.validateExpireIn(options.expireIn)
     ErrorHandler.validateSecret(options.secret)
+    if (options.algorithm !== undefined) {
+      ErrorHandler.validateAlgorithm(options.algorithm)
+    }
     if (options.keyDerivation !== undefined) {
       ErrorHandler.validateKeyDerivation(options.keyDerivation)
     }

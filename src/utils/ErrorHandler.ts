@@ -10,7 +10,7 @@ import {
   VersionMismatchError,
   getErrorMessage
 } from '@utils/index'
-import type { KeyDerivationAlgo } from '@interfaces/index'
+import type { EncryptionAlgo, KeyDerivationAlgo } from '@interfaces/index'
 
 /**
  * Handles errors and validates data for JWT operations
@@ -182,6 +182,24 @@ export class ErrorHandler {
     const validMethods = ['basic', 'pbkdf2'] as const
     if (!validMethods.includes(keyDerivation)) {
       throw new ValidationError(getErrorMessage('KEY_DERIVATION_INVALID_METHOD'))
+    }
+  }
+
+  /**
+   * Checks if encryption algorithm is valid
+   * @param algorithm - Encryption algorithm to check
+   * @throws {ValidationError} When algorithm is invalid
+   */
+  static validateAlgorithm(algorithm: string): void {
+    if (typeof algorithm !== 'string') {
+      throw new ValidationError(getErrorMessage('ALGORITHM_MUST_BE_STRING'))
+    }
+    if (algorithm.length === 0) {
+      throw new ValidationError(getErrorMessage('ALGORITHM_CANNOT_BE_EMPTY'))
+    }
+    const validAlgorithms = ['aes-256-gcm', 'chacha20-poly1305'] as const
+    if (!validAlgorithms.includes(algorithm as EncryptionAlgo)) {
+      throw new ValidationError(getErrorMessage('INVALID_ALGORITHM'))
     }
   }
 
@@ -377,6 +395,9 @@ export class ErrorHandler {
    * @throws {ValidationError} When base64 decoding fails
    */
   static validateBase64Decode(token: string, errorMessage: string): string {
+    if (!/^[A-Za-z0-9+/]*={0,2}$/.test(token)) {
+      throw new ValidationError(errorMessage)
+    }
     try {
       return Buffer.from(token, 'base64').toString('utf8')
     } catch {

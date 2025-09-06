@@ -48,6 +48,14 @@ describe('ErrorHandler', () => {
       const wrapped = ErrorHandler.wrap(fn)
       expect(() => wrapped('test')).toThrow('Unknown error occurred')
     })
+
+    it('should create SecureJWTError with error message for Error objects', () => {
+      const fn = jest.fn().mockImplementation(() => {
+        throw new Error('Custom error message')
+      })
+      const wrapped = ErrorHandler.wrap(fn)
+      expect(() => wrapped('test')).toThrow('Custom error message')
+    })
   })
 
   describe('validateData', () => {
@@ -454,10 +462,8 @@ describe('ErrorHandler', () => {
       expect(result).toBe('test')
     })
 
-    it('should not throw for invalid base64 (Buffer.from handles it)', () => {
-      // Buffer.from doesn't throw for invalid base64, it just produces garbage
-      const result = ErrorHandler.validateBase64Decode('invalid base64!', 'Invalid base64')
-      expect(typeof result).toBe('string')
+    it('should throw ValidationError for invalid base64', () => {
+      expect(() => ErrorHandler.validateBase64Decode('invalid base64!', 'Invalid base64')).toThrow(ValidationError)
     })
   })
 
@@ -619,10 +625,8 @@ describe('ErrorHandler', () => {
       expect(result).toBe(original)
     })
 
-    it('should not throw for invalid base64 (Buffer.from handles it)', () => {
-      // Buffer.from doesn't throw for invalid base64, it just produces garbage
-      const result = ErrorHandler.validateBase64Decode('invalid base64!', 'Invalid base64')
-      expect(typeof result).toBe('string')
+    it('should throw ValidationError for invalid base64', () => {
+      expect(() => ErrorHandler.validateBase64Decode('invalid base64!', 'Invalid base64')).toThrow(ValidationError)
     })
 
     it('should throw ValidationError when Buffer.from throws', () => {
@@ -1227,6 +1231,99 @@ describe('ErrorHandler', () => {
         expect(error).toBeInstanceOf(ValidationError)
         expect((error as ValidationError).message).toBe(errorMessages.KEY_DERIVATION_INVALID_METHOD)
       }
+    })
+  })
+
+  describe('validateAlgorithm', () => {
+    it('should not throw for valid algorithms', () => {
+      expect(() => ErrorHandler.validateAlgorithm('aes-256-gcm')).not.toThrow()
+      expect(() => ErrorHandler.validateAlgorithm('chacha20-poly1305')).not.toThrow()
+    })
+
+    it('should throw ValidationError for non-string algorithm', () => {
+      expect(() => ErrorHandler.validateAlgorithm(123 as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateAlgorithm({} as any)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for empty string algorithm', () => {
+      expect(() => ErrorHandler.validateAlgorithm('')).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid algorithm', () => {
+      expect(() => ErrorHandler.validateAlgorithm('invalid-algo')).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateAlgorithm('aes-128-gcm')).toThrow(ValidationError)
+    })
+  })
+
+  describe('validateExpiration', () => {
+    it('should not throw for valid expiration', () => {
+      const now = Math.floor(Date.now() / 1000)
+      const future = now + 3600
+      expect(() => ErrorHandler.validateExpiration(future, now + 7200)).not.toThrow()
+    })
+
+    it('should throw ValidationError for expiration too far in future', () => {
+      const now = Math.floor(Date.now() / 1000)
+      const future = now + 3600
+      expect(() => ErrorHandler.validateExpiration(future, now + 1800)).toThrow(ValidationError)
+    })
+  })
+
+  describe('validateVersionCompatibility', () => {
+    it('should not throw for matching versions', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '1.0.0')).not.toThrow()
+    })
+
+    it('should throw VersionMismatchError for different versions', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '2.0.0')).toThrow(VersionMismatchError)
+    })
+
+    it('should throw VersionMismatchError for downgrade attack', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('1.0.0', '2.0.0')).toThrow(VersionMismatchError)
+    })
+
+    it('should throw VersionMismatchError for upgrade not supported', () => {
+      expect(() => ErrorHandler.validateVersionCompatibility('2.0.0', '1.0.0')).toThrow(VersionMismatchError)
+    })
+  })
+
+  describe('validateTokenTimestamps', () => {
+    it('should not throw for matching timestamps', () => {
+      const now = Math.floor(Date.now() / 1000)
+      expect(() => ErrorHandler.validateTokenTimestamps(now + 3600, now + 3600, now, now)).not.toThrow()
+    })
+
+    it('should throw ValidationError for mismatched timestamps', () => {
+      const now = Math.floor(Date.now() / 1000)
+      expect(() => ErrorHandler.validateTokenTimestamps(now + 3600, now + 1800, now, now)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateTokenTimestamps(now + 3600, now + 3600, now, now + 1)).toThrow(ValidationError)
+    })
+  })
+
+  describe('validateJSONParse', () => {
+    it('should parse valid JSON', () => {
+      const result = ErrorHandler.validateJSONParse('{"test": "value"}', 'Error')
+      expect(result).toEqual({ test: 'value' })
+    })
+
+    it('should throw ValidationError for invalid JSON', () => {
+      expect(() => ErrorHandler.validateJSONParse('invalid json', 'Custom error')).toThrow(ValidationError)
+    })
+  })
+
+  describe('validateBase64Decode', () => {
+    it('should decode valid base64', () => {
+      const encoded = Buffer.from('test').toString('base64')
+      const result = ErrorHandler.validateBase64Decode(encoded, 'Error')
+      expect(result).toBe('test')
+    })
+
+    it('should throw ValidationError for invalid base64', () => {
+      expect(() => ErrorHandler.validateBase64Decode('invalid base64!', 'Custom error')).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for malformed base64', () => {
+      expect(() => ErrorHandler.validateBase64Decode('invalid@#$%', 'Custom error')).toThrow(ValidationError)
     })
   })
 })
