@@ -1,6 +1,6 @@
 import { randomBytes, pbkdf2Sync } from 'node:crypto'
-import AES128 from '@algorithms/AES128'
-import AES256 from '@algorithms/AES256'
+import AES128GCM from '@algorithms/AES128GCM'
+import AES256GCM from '@algorithms/AES256GCM'
 import ChaCha20 from '@algorithms/ChaCha20'
 import { EncryptionError, getErrorMessage } from '@utils/index'
 import type { EncryptionAlgo, IEncryptionAlgo } from '@interfaces/index'
@@ -48,9 +48,9 @@ export default class Algorithms {
    */
   static getInstance(algorithm: EncryptionAlgo): IEncryptionAlgo {
     if (algorithm === 'aes-128-gcm') {
-      return new AES128()
+      return new AES128GCM()
     } else if (algorithm === 'aes-256-gcm') {
-      return new AES256()
+      return new AES256GCM()
     } else if (algorithm === 'chacha20-poly1305') {
       return new ChaCha20()
     } else {

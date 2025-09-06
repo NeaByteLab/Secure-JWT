@@ -131,6 +131,12 @@ describe('ChaCha20', () => {
     })
   })
 
+  describe('getKeyLength', () => {
+    it('should return 32 for ChaCha20', () => {
+      expect(chaCha20.getKeyLength()).toBe(32)
+    })
+  })
+
   describe('getAlgoName', () => {
     it('should return chacha20-poly1305', () => {
       expect(chaCha20.getAlgoName()).toBe('chacha20-poly1305')

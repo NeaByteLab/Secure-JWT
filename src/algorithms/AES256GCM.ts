@@ -3,18 +3,18 @@ import { ErrorHandler } from '@utils/index'
 import type { TokenEncrypted, EncryptionAlgo, IEncryptionAlgo } from '@interfaces/index'
 
 /**
- * AES-128-GCM encryption class
- * Handles encryption and decryption using AES-128-GCM algorithm
+ * AES-256-GCM encryption class
+ * Handles encryption and decryption using AES-256-GCM algorithm
  */
-export default class AES128 implements IEncryptionAlgo {
+export default class AES256GCM implements IEncryptionAlgo {
   /** Algorithm name constant */
-  private readonly algorithm = 'aes-128-gcm'
+  private readonly algorithm = 'aes-256-gcm'
 
   /**
-   * Encrypts data using AES-128-GCM
+   * Encrypts data using AES-256-GCM
    * @param data - String data to encrypt
-   * @param key - 16-byte encryption key
-   * @param iv - 12-byte initialization vector
+   * @param key - 32-byte encryption key
+   * @param iv - 16-byte initialization vector
    * @param version - Token version for additional authentication data
    * @returns Object containing encrypted data, IV, and authentication tag
    */
@@ -33,9 +33,9 @@ export default class AES128 implements IEncryptionAlgo {
   }
 
   /**
-   * Decrypts data using AES-128-GCM
+   * Decrypts data using AES-256-GCM
    * @param tokenEncrypted - Object containing encrypted data, IV, and authentication tag
-   * @param key - 16-byte decryption key
+   * @param key - 32-byte decryption key
    * @param version - Token version for additional authentication data
    * @returns Decrypted string data
    */
@@ -49,19 +49,19 @@ export default class AES128 implements IEncryptionAlgo {
   }
 
   /**
-   * Gets the required IV length for AES-128-GCM
-   * @returns IV length in bytes (12)
+   * Gets the required IV length for AES-256-GCM
+   * @returns IV length in bytes (16)
    */
   getIVLength(): number {
-    return 12
+    return 16
   }
 
   /**
-   * Gets the required key length for AES-128-GCM
-   * @returns Key length in bytes (16)
+   * Gets the required key length for AES-256-GCM
+   * @returns Key length in bytes (32)
    */
   getKeyLength(): number {
-    return 16
+    return 32
   }
 
   /**

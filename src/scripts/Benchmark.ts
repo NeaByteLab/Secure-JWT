@@ -22,7 +22,7 @@ for (const cacheSize of cacheSizes) {
       cached: cacheSize
     })
     const tokens: string[] = testPayloads.map(payload => jwtSecure.sign(payload))
-  
+
     /**
      * Benchmark JWT signing operation with random payloads
      */
@@ -33,7 +33,7 @@ for (const cacheSize of cacheSizes) {
         jwtSecure.sign(payload)
       }
     })
-  
+
     /**
      * Benchmark JWT verification with cached tokens for cache hit performance
      */
@@ -44,7 +44,7 @@ for (const cacheSize of cacheSizes) {
         jwtSecure.verify(token)
       }
     })
-  
+
     /**
      * Benchmark JWT verification with fresh tokens for cache miss performance
      */
@@ -56,7 +56,7 @@ for (const cacheSize of cacheSizes) {
         jwtSecure.verify(token)
       }
     })
-  
+
     /**
      * Benchmark JWT decoding operation without verification
      */
@@ -67,7 +67,7 @@ for (const cacheSize of cacheSizes) {
         jwtSecure.decode(token)
       }
     })
-  
+
     /**
      * Benchmark complete JWT workflow: sign, verify, and decode
      */

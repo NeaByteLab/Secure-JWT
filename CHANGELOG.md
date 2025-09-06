@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.1] - 2025-09-06
+
+### Changed
+- **File Naming Convention**
+  - Renamed `AES128.ts` to `AES128GCM.ts` for better clarity
+  - Renamed `AES256.ts` to `AES256GCM.ts` for better clarity
+  - Updated all import references and class names accordingly
+
+### Fixed
+- **Test Coverage Improvements**
+  - Fixed failing unit tests in ErrorHandler.test.ts
+  - Updated validateKeyLength test to accept both 16-byte (AES128) and 32-byte (AES256/ChaCha20) keys
+  - Fixed validateAlgorithm test to accept aes-128-gcm as valid algorithm
+  - Added complete test suite for AES128GCM algorithm (19 test cases)
+  - Added missing getKeyLength test for ChaCha20 algorithm
+
+### Performance
+- **Test Coverage Achievement**
+  - Achieved 100% test coverage for all algorithm files (AES128GCM, AES256GCM, ChaCha20)
+  - Overall test coverage improved from 98.37% to 98.48%
+  - All 417 tests now passing with 0 failures
+
+### Documentation
+- **README Updates**
+  - Updated coverage badge to reflect 98.48% test coverage
+  - Enhanced algorithm options table with AES-128-GCM
+  - Updated usage examples to show algorithm selection
+
+---
+
 ## [1.5.0] - 2025-09-06
 
 ### Added

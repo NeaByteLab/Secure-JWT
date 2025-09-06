@@ -72,7 +72,7 @@ describe('ErrorMap', () => {
       expect(errorMessages.AUTH_TAG_INVALID).toBe('Authentication tag verification failed')
       expect(errorMessages.IV_INVALID).toBe('Invalid initialization vector')
       expect(errorMessages.KEY_DERIVATION_FAILED).toBe('Key derivation failed')
-      expect(errorMessages.INVALID_ALGORITHM).toBe('Invalid encryption algorithm. Supported algorithms: aes-256-gcm, chacha20-poly1305')
+      expect(errorMessages.INVALID_ALGORITHM).toBe('Invalid encryption algorithm. Supported algorithms: aes-128-gcm, aes-256-gcm, chacha20-poly1305')
     })
 
     it('should have consistent structure', () => {

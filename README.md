@@ -3,7 +3,7 @@
 ![npm version](https://img.shields.io/npm/v/@neabyte/secure-jwt)
 ![node version](https://img.shields.io/node/v/@neabyte/secure-jwt)
 ![typescript version](https://img.shields.io/badge/typeScript-5.9.2-blue.svg)
-![coverage](https://img.shields.io/badge/coverage-98.37%25-brightgreen)
+![coverage](https://img.shields.io/badge/coverage-98.48%25-brightgreen)
 ![license](https://img.shields.io/npm/l/@neabyte/secure-jwt.svg)
 
 A secure JWT library implementation with multiple encryption algorithms, zero dependencies, and built-in security for Node.js applications. Designed for high performance and reliability with TypeScript support.

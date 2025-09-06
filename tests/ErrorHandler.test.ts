@@ -367,13 +367,18 @@ describe('ErrorHandler', () => {
   })
 
   describe('validateKeyLength', () => {
-    it('should not throw for valid key length', () => {
+    it('should not throw for valid 32-byte key length', () => {
       const validKey = Buffer.alloc(32)
       expect(() => ErrorHandler.validateKeyLength(validKey)).not.toThrow()
     })
 
+    it('should not throw for valid 16-byte key length', () => {
+      const validKey = Buffer.alloc(16)
+      expect(() => ErrorHandler.validateKeyLength(validKey)).not.toThrow()
+    })
+
     it('should throw EncryptionError for invalid key length', () => {
-      const invalidKey = Buffer.alloc(16)
+      const invalidKey = Buffer.alloc(8) // Too short
       expect(() => ErrorHandler.validateKeyLength(invalidKey)).toThrow(EncryptionError)
     })
   })
@@ -1236,6 +1241,7 @@ describe('ErrorHandler', () => {
 
   describe('validateAlgorithm', () => {
     it('should not throw for valid algorithms', () => {
+      expect(() => ErrorHandler.validateAlgorithm('aes-128-gcm')).not.toThrow()
       expect(() => ErrorHandler.validateAlgorithm('aes-256-gcm')).not.toThrow()
       expect(() => ErrorHandler.validateAlgorithm('chacha20-poly1305')).not.toThrow()
     })
@@ -1251,7 +1257,6 @@ describe('ErrorHandler', () => {
 
     it('should throw ValidationError for invalid algorithm', () => {
       expect(() => ErrorHandler.validateAlgorithm('invalid-algo')).toThrow(ValidationError)
-      expect(() => ErrorHandler.validateAlgorithm('aes-128-gcm')).toThrow(ValidationError)
     })
   })
 
