@@ -127,7 +127,7 @@ export default class SecureJWT {
     try {
       ErrorHandler.validateData(data)
       const now = Math.floor(Date.now() / 1000)
-      const exp = now + Math.floor(this.#expireInMs / 1000)
+      const exp = now + Math.max(1, Math.floor(this.#expireInMs / 1000))
       const maxExp = now + 365 * 24 * 60 * 60
       ErrorHandler.validateExpiration(exp, maxExp)
       const payload: PayloadData = {

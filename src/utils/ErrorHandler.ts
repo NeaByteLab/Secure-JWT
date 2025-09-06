@@ -142,7 +142,10 @@ export class ErrorHandler {
     if (version.length === 0) {
       throw new ValidationError(getErrorMessage('VERSION_CANNOT_BE_EMPTY'))
     }
-    if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    if (
+      !/^(0|[1-9]\d{0,8})\.(0|[1-9]\d{0,8})\.(0|[1-9]\d{0,8})$/.test(version) ||
+      version === '0.0.0'
+    ) {
       throw new ValidationError(getErrorMessage('VERSION_INVALID_FORMAT'))
     }
   }
@@ -214,7 +217,7 @@ export class ErrorHandler {
    */
   static checkTokenExpiration(exp: number): void {
     const now = Math.floor(Date.now() / 1000)
-    if (exp < now) {
+    if (exp <= now) {
       throw new TokenExpiredError(getErrorMessage('TOKEN_EXPIRED'))
     }
   }

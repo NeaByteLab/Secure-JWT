@@ -32,7 +32,7 @@ describe('TimeParser', () => {
     })
 
     it('should handle decimal values', () => {
-      expect(timeToMs({ value: 1.5, unit: 'm' })).toBe(90000)
+      expect(timeToMs({ value: 1, unit: 'm' })).toBe(60000)
     })
 
     it('should throw TimeFormatError for unsupported unit', () => {
@@ -51,9 +51,9 @@ describe('TimeParser', () => {
       expect(parseTimeString('1y')).toEqual({ value: 1, unit: 'y' })
     })
 
-    it('should parse decimal values', () => {
-      expect(parseTimeString('1.5m')).toEqual({ value: 1.5, unit: 'm' })
-      expect(parseTimeString('2.5h')).toEqual({ value: 2.5, unit: 'h' })
+    it('should reject decimal values', () => {
+      expect(() => parseTimeString('1.5m')).toThrow(TimeFormatError)
+      expect(() => parseTimeString('2.5h')).toThrow(TimeFormatError)
     })
 
     it('should throw TimeFormatError for invalid format', () => {

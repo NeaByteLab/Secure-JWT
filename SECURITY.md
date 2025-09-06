@@ -6,10 +6,7 @@ We release patches for security vulnerabilities in the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.3.x   | ✅                 |
-| 1.2.x   | ✅                 |
-| 1.1.x   | ✅                 |
-| 1.0.x   | ✅                 |
+| 1.x.x - 2.x.x  | ✅          |
 | < 1.0   | ❌                 |
 
 ## Security Features
@@ -105,4 +102,4 @@ For security-related questions or concerns:
 ---
 
 **Last Updated**: September 6, 2025
-**Version**: 1.3.0
+**Version**: 1.4.3

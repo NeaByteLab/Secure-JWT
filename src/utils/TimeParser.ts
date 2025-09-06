@@ -36,12 +36,12 @@ export function timeToMs(timeUnit: TimeUnit): number {
  * @throws {TimeFormatError} When time string format is invalid or value is negative
  */
 export function parseTimeString(timeString: string): TimeUnit {
-  const timeRegex = /^(\d+(?:\.\d+)?)(ms|s|m|h|d|M|y)$/
+  const timeRegex = /^(\d+)(ms|s|m|h|d|M|y)$/
   const match = timeRegex.exec(timeString)
   if (!match || match.length < 3 || match[1] === undefined || match[2] === undefined) {
     throw new TimeFormatError(errorMessages.TIME_FORMAT_INVALID)
   }
-  const value = parseFloat(match[1])
+  const value = parseInt(match[1], 10)
   const unit = match[2] as TimeUnit['unit']
   if (value <= 0) {
     throw new TimeFormatError(errorMessages.TIME_VALUE_NEGATIVE)

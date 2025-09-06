@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.3] - 2025-09-06
+
+### Fixed
+- **Version validation**: Fixed leading zeros bug (e.g., "01.0.0" now properly rejected)
+- **Token expiration**: Fixed decimal expireIn bug for very small expiration times
+
+---
+
 ## [1.4.2] - 2025-09-06
 
 ### Added
