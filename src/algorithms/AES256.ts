@@ -4,7 +4,7 @@ import type { TokenEncrypted, EncryptionAlgo, IEncryptionAlgo } from '@interface
 
 /**
  * AES-256-GCM encryption class
- * Provides encryption and decryption using AES-256-GCM algorithm
+ * Handles encryption and decryption using AES-256-GCM algorithm
  */
 export default class AES256 implements IEncryptionAlgo {
   /** Algorithm name constant */

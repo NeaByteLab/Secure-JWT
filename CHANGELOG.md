@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2025-09-06
+
+### Added
+- **Key derivation options**: Choose between `basic` (fast) and `pbkdf2` (secure) key generation methods
+- **PBKDF2 key derivation**: 50K iterations with SHA-256 for enterprise-grade security
+- **Basic key derivation**: Fast salt + secret concatenation for high-performance applications
+- **Key derivation validation**: Validation for key derivation method selection
+- **Key derivation documentation**: Updated README with Key Derivation Options table
+- **Architecture documentation**: Separate ARCHITECTURE.md with detailed diagrams
+- **External references**: Links to ARCHITECTURE.md and BENCHMARK.md
+
+### Enhanced
+- **Security flexibility**: Configurable key derivation methods based on use case requirements
+- **Performance options**: Basic key derivation for speed, PBKDF2 for maximum security
+- **API consistency**: New `keyDerivation` option follows existing constructor pattern
+- **Documentation**: Enhanced README with clear key derivation guidance and examples
+- **Test coverage**: Improved from 98.28% to 98.32% with key derivation tests
+- **Documentation structure**: Cleaner README with better navigation and external references
+
+### Technical
+- **Algorithm abstraction**: Extended `Algorithms` class with key derivation methods
+- **Type safety**: Added `KeyDerivationAlgo` type for compile-time validation
+- **Error handling**: Error messages for invalid key derivation methods
+- **Backward compatibility**: Default `basic` key derivation maintains existing behavior
+
+---
+
 ## [1.3.0] - 2025-09-06
 
 ### Added

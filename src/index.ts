@@ -22,12 +22,14 @@ import {
 } from '@utils/index'
 
 /**
- * Secure JWT token handler with encryption support
- * Handles token creation, verification, and data extraction
+ * JWT token handler with encryption
+ * Creates, verifies, and extracts data from tokens
  */
 export default class SecureJWT {
   /** Encryption algorithm */
   readonly #algorithm: IEncryptionAlgo
+  /** Key derivation method */
+  readonly #keyDerivation: string
   /** Secret key for encryption */
   readonly #secret: Buffer
   /** Expiration time in milliseconds */
@@ -40,13 +42,16 @@ export default class SecureJWT {
   readonly #verifyCache: Cache<boolean>
 
   /**
-   * Initializes a new SecureJWT instance
-   * @param options - Token configuration including expiration, secret key, and version
+   * Creates a new SecureJWT instance
+   * @param options - Token configuration with expiration, secret key, and version
    */
   constructor(options: JWTOptions) {
     ErrorHandler.validateOptions(options)
     ErrorHandler.validateExpireIn(options.expireIn)
     ErrorHandler.validateSecret(options.secret)
+    if (options.keyDerivation !== undefined) {
+      ErrorHandler.validateKeyDerivation(options.keyDerivation)
+    }
     if (options.version !== undefined) {
       ErrorHandler.validateVersion(options.version)
     }
@@ -54,6 +59,7 @@ export default class SecureJWT {
       ErrorHandler.validateCacheSize(options.cached)
     }
     this.#algorithm = Algorithms.getInstance(options.algorithm ?? 'aes-256-gcm')
+    this.#keyDerivation = options.keyDerivation ?? 'basic'
     this.#secret = this.generateSecret(options.secret)
     this.#expireInMs = parsetimeToMs(options.expireIn)
     this.#version = options.version ?? '1.0.0'
@@ -62,19 +68,24 @@ export default class SecureJWT {
   }
 
   /**
-   * Generates a secret key from the provided secret string
-   * @param secret - Secret string to use for key generation
-   * @returns Buffer containing the generated secret key
+   * Creates a secret key from the provided string
+   * @param secret - Secret string for key generation
+   * @returns Buffer containing the secret key
    */
   private generateSecret(secret: string): Buffer {
-    const salt = Algorithms.getRandomBytes(32)
-    return Buffer.concat([salt, Buffer.from(secret, 'utf8')])
+    if (this.#keyDerivation === 'pbkdf2') {
+      return Algorithms.getDerivedKeyPBKDF2(secret)
+    } else if (this.#keyDerivation === 'basic') {
+      return Algorithms.getDerivedKeyBasic(secret)
+    } else {
+      throw new ValidationError(getErrorMessage('INVALID_KEY_DERIVATION_METHOD'))
+    }
   }
 
   /**
-   * Encrypts data using the configured encryption algorithm
+   * Encrypts data using the configured algorithm
    * @param data - String data to encrypt
-   * @returns Object containing encrypted data, initialization vector, and authentication tag
+   * @returns Object with encrypted data, IV, and authentication tag
    */
   private encrypt(data: string): TokenEncrypted {
     ErrorHandler.validateEncryptionData(data)
@@ -85,8 +96,8 @@ export default class SecureJWT {
   }
 
   /**
-   * Decrypts data using the configured encryption algorithm
-   * @param tokenEncrypted - Object containing encrypted data, initialization vector, and authentication tag
+   * Decrypts data using the configured algorithm
+   * @param tokenEncrypted - Object with encrypted data, IV, and authentication tag
    * @returns Decrypted data as string
    */
   private decrypt(tokenEncrypted: TokenEncrypted): string {
@@ -108,7 +119,7 @@ export default class SecureJWT {
   }
 
   /**
-   * Generates a JWT token from data
+   * Creates a JWT token from data
    * @param data - Data to include in the token (will be JSON stringified)
    * @returns JWT token string
    */
@@ -155,7 +166,7 @@ export default class SecureJWT {
   /**
    * Checks if a JWT token is valid
    * @param token - Base64 encoded token to validate
-   * @returns Boolean indicating if token is valid and not expired
+   * @returns True if token is valid and not expired
    */
   verify(token: string): boolean {
     try {
@@ -208,7 +219,7 @@ export default class SecureJWT {
   }
 
   /**
-   * Validates a JWT token and throws specific errors on failure
+   * Validates a JWT token and throws errors on failure
    * @param token - Base64 encoded token to validate
    * @throws {ValidationError} When token format is invalid
    * @throws {TokenExpiredError} When token has expired

@@ -5,7 +5,7 @@ import { ErrorHandler, TimeFormatError, errorMessages } from '@utils/index'
  * Converts time unit to milliseconds
  * @param timeUnit - TimeUnit object with value and unit to convert
  * @returns Time in milliseconds
- * @throws {TimeFormatError} when unit is not supported
+ * @throws {TimeFormatError} When unit is not supported
  */
 export function timeToMs(timeUnit: TimeUnit): number {
   const { value, unit } = timeUnit
@@ -33,7 +33,7 @@ export function timeToMs(timeUnit: TimeUnit): number {
  * Parses time expressions into TimeUnit objects
  * @param timeString - Time string to parse (e.g., '1m', '5h', '1d', '1M', '1y')
  * @returns TimeUnit object with value and unit
- * @throws {TimeFormatError} when time string format is invalid or value is negative
+ * @throws {TimeFormatError} When time string format is invalid or value is negative
  */
 export function parseTimeString(timeString: string): TimeUnit {
   const timeRegex = /^(\d+(?:\.\d+)?)(ms|s|m|h|d|M|y)$/
@@ -53,7 +53,7 @@ export function parseTimeString(timeString: string): TimeUnit {
  * Parses time string and converts to milliseconds
  * @param timeString - Time string to parse (e.g., '1m', '5h', '1d')
  * @returns Time in milliseconds
- * @throws {TimeFormatError} when time string format is invalid
+ * @throws {TimeFormatError} When time string format is invalid
  */
 export function parsetimeToMs(timeString: string): number {
   ErrorHandler.validateTimeString(timeString)

@@ -4,6 +4,11 @@
 export type EncryptionAlgo = 'aes-256-gcm' | 'chacha20-poly1305'
 
 /**
+ * Available key derivation algorithms
+ */
+export type KeyDerivationAlgo = 'basic' | 'pbkdf2'
+
+/**
  * JWT token payload format
  */
 export interface JWTPayload {
@@ -21,6 +26,8 @@ export interface JWTPayload {
 export interface JWTOptions {
   /** Encryption algorithm to use (default: 'aes-256-gcm') */
   algorithm?: EncryptionAlgo
+  /** Key derivation algorithm to use (default: 'basic') */
+  keyDerivation?: KeyDerivationAlgo
   /** Secret key for token signing (required) */
   secret: string
   /** Token expiration time as string (e.g., '1h', '30m', '7d') */

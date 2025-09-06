@@ -1172,4 +1172,61 @@ describe('ErrorHandler', () => {
       }
     })
   })
+
+  describe('validateKeyDerivation', () => {
+    it('should validate basic key derivation method', () => {
+      expect(() => ErrorHandler.validateKeyDerivation('basic')).not.toThrow()
+    })
+
+    it('should validate pbkdf2 key derivation method', () => {
+      expect(() => ErrorHandler.validateKeyDerivation('pbkdf2')).not.toThrow()
+    })
+
+    it('should throw ValidationError for non-string input', () => {
+      expect(() => ErrorHandler.validateKeyDerivation(123 as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateKeyDerivation(null as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateKeyDerivation(undefined as any)).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateKeyDerivation({} as any)).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for empty string', () => {
+      expect(() => ErrorHandler.validateKeyDerivation('')).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid method', () => {
+      expect(() => ErrorHandler.validateKeyDerivation('invalid')).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateKeyDerivation('aes-256-gcm')).toThrow(ValidationError)
+      expect(() => ErrorHandler.validateKeyDerivation('chacha20-poly1305')).toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError with correct error message for non-string', () => {
+      try {
+        ErrorHandler.validateKeyDerivation(123 as any)
+        fail('Expected ValidationError to be thrown')
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError)
+        expect((error as ValidationError).message).toBe(errorMessages.KEY_DERIVATION_MUST_BE_STRING)
+      }
+    })
+
+    it('should throw ValidationError with correct error message for empty string', () => {
+      try {
+        ErrorHandler.validateKeyDerivation('')
+        fail('Expected ValidationError to be thrown')
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError)
+        expect((error as ValidationError).message).toBe(errorMessages.KEY_DERIVATION_CANNOT_BE_EMPTY)
+      }
+    })
+
+    it('should throw ValidationError with correct error message for invalid method', () => {
+      try {
+        ErrorHandler.validateKeyDerivation('invalid')
+        fail('Expected ValidationError to be thrown')
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError)
+        expect((error as ValidationError).message).toBe(errorMessages.KEY_DERIVATION_INVALID_METHOD)
+      }
+    })
+  })
 })

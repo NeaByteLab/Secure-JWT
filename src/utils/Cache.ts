@@ -1,7 +1,7 @@
 import type { CacheEntry } from '@interfaces/index'
 
 /**
- * In-memory cache that stores data with expiration
+ * In-memory cache that stores data with expiration time
  */
 export class Cache<T> {
   private readonly cache = new Map<string, CacheEntry<T>>()

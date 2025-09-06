@@ -4,7 +4,7 @@ import type { TokenEncrypted, EncryptionAlgo, IEncryptionAlgo } from '@interface
 
 /**
  * ChaCha20-Poly1305 encryption class
- * Provides encryption and decryption using ChaCha20-Poly1305 algorithm
+ * Handles encryption and decryption using ChaCha20-Poly1305 algorithm
  */
 export default class ChaCha20 implements IEncryptionAlgo {
   /** Algorithm name constant */

@@ -1,5 +1,5 @@
 /**
- * Error codes for error identification
+ * Error codes for identifying different error types
  */
 export const errorCodes = {
   VALIDATION_ERROR: 'VALIDATION_ERROR',
@@ -14,7 +14,7 @@ export const errorCodes = {
 } as const
 
 /**
- * Error messages for error reporting
+ * Error messages for reporting errors
  */
 export const errorMessages = {
   // Data validation errors
@@ -81,6 +81,12 @@ export const errorMessages = {
   CACHE_SIZE_TOO_SMALL: 'Cache size must be at least 1',
   CACHE_SIZE_TOO_LARGE: 'Cache size must be at most 10000',
 
+  // Key derivation errors
+  KEY_DERIVATION_MUST_BE_STRING: 'Key derivation method must be a string',
+  KEY_DERIVATION_CANNOT_BE_EMPTY: 'Key derivation method cannot be empty',
+  KEY_DERIVATION_INVALID_METHOD: 'Invalid key derivation method. Must be "basic" or "pbkdf2"',
+  INVALID_KEY_DERIVATION_METHOD: 'Invalid key derivation method provided',
+
   // Options errors
   OPTIONS_MUST_BE_OBJECT: 'Options must be an object',
   EXPIRE_IN_REQUIRED: 'expireIn is required and must be a string',
@@ -121,7 +127,7 @@ export const errorMessages = {
 } as const
 
 /**
- * Retrieves error message from errorMessages object
+ * Gets error message from errorMessages object
  * @param key - Error message key
  * @returns Error message string
  */
